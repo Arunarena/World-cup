@@ -122,7 +122,7 @@ a {
 .hero {
   display: grid;
   min-height: calc(100vh - 4.8rem);
-  grid-template-columns: minmax(19rem, 0.72fr) minmax(34rem, 1.28fr);
+  grid-template-columns: minmax(0, 0.66fr) minmax(0, 1.34fr);
   align-items: center;
   gap: clamp(1.25rem, 3vw, 3rem);
   padding: clamp(2rem, 5vw, 5rem) clamp(1rem, 4vw, 3rem);
@@ -218,6 +218,7 @@ h2 {
 }
 
 .live-panel {
+  width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 8px;
   background: var(--panel);
@@ -460,16 +461,142 @@ iframe {
   font-size: clamp(1.8rem, 4vw, 3rem);
 }
 
+.game-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(18rem, 0.75fr);
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.penalty-stage,
+.game-panel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.penalty-stage {
+  min-height: clamp(18rem, 42vh, 30rem);
+  padding: clamp(1rem, 3vw, 2rem);
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.08) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 2px, transparent 2px),
+    linear-gradient(180deg, rgba(25, 182, 122, 0.22), rgba(7, 18, 15, 0.82));
+  background-size:
+    4rem 4rem,
+    4rem 4rem,
+    auto;
+}
+
+.goal-net {
+  position: relative;
+  height: 100%;
+  min-height: 16rem;
+  border: 0.35rem solid rgba(255, 255, 255, 0.72);
+  border-bottom: 0;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.14) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.14) 1px, transparent 1px);
+  background-size: 2rem 2rem;
+}
+
+.goal-zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 33.333%;
+  border-right: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.goal-zone.left {
+  left: 0;
+}
+
+.goal-zone.center {
+  left: 33.333%;
+}
+
+.goal-zone.right {
+  right: 0;
+  border-right: 0;
+}
+
+.keeper,
+.ball {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  transition:
+    left 260ms ease,
+    top 260ms ease,
+    transform 260ms ease,
+    background 260ms ease;
+}
+
+.keeper {
+  left: 50%;
+  top: 42%;
+  width: 4.2rem;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  background: var(--accent-3);
+  color: white;
+  font-weight: 900;
+}
+
+.ball {
+  left: 50%;
+  top: 88%;
+  width: 2.2rem;
+  aspect-ratio: 1;
+  border: 0.28rem solid #111;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 0 2rem rgba(244, 197, 66, 0.28);
+}
+
+.game-panel {
+  display: grid;
+  align-content: center;
+  gap: 1rem;
+  padding: clamp(1rem, 3vw, 2rem);
+}
+
+.game-score {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  gap: 0.7rem;
+  align-items: baseline;
+}
+
+.game-score span,
+.game-panel p {
+  color: var(--muted);
+}
+
+.game-score strong {
+  color: var(--accent);
+  font-size: 2rem;
+}
+
+.shot-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+}
+
 @keyframes pulse {
   70% {
     box-shadow: 0 0 0 1.6rem rgba(244, 197, 66, 0);
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1280px) {
   .topbar,
   .hero,
-  .split-band {
+  .split-band,
+  .game-layout {
     grid-template-columns: 1fr;
   }
 
@@ -483,15 +610,36 @@ iframe {
   }
 
   .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
     min-height: auto;
+    padding: 0.9rem clamp(0.65rem, 2.6vw, 1.25rem) 1.25rem;
+  }
+
+  .live-panel {
+    order: -1;
+  }
+
+  .hero-copy {
+    max-width: none;
   }
 
   .video-frame {
-    min-height: clamp(17rem, 52vh, 28rem);
+    min-height: clamp(21rem, 64svh, 38rem);
+    aspect-ratio: auto;
   }
 
   h1 {
-    max-width: 12ch;
+    max-width: 18ch;
+    font-size: clamp(2.35rem, 8vw, 4.2rem);
+    line-height: 0.94;
+  }
+
+  .intro {
+    max-width: 54rem;
+    font-size: 0.95rem;
+    line-height: 1.55;
   }
 
   .feed-grid,
@@ -502,6 +650,59 @@ iframe {
   }
 
   .fixture {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .topbar {
+    position: relative;
+    padding: 0.7rem;
+  }
+
+  .brand small {
+    display: none;
+  }
+
+  .nav-links a {
+    padding: 0.45rem 0.62rem;
+    font-size: 0.85rem;
+  }
+
+  .hero {
+    padding-top: 0.55rem;
+  }
+
+  .score-strip,
+  .match-meta {
+    padding: 0.65rem;
+  }
+
+  .match-meta {
+    display: grid;
+  }
+
+  .player-actions {
+    justify-content: stretch;
+  }
+
+  .player-actions .icon-button {
+    flex: 1;
+    min-width: 0;
+    padding-inline: 0.5rem;
+  }
+
+  .video-frame {
+    min-height: 68svh;
+  }
+
+  .content-band,
+  .split-band {
+    margin-inline: 0.65rem;
+  }
+
+  .shot-buttons,
+  .game-score {
     grid-template-columns: 1fr;
   }
 }

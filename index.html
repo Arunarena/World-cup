@@ -24,6 +24,7 @@
           <a href="#fixtures">Fixtures</a>
           <a href="#teams">Teams</a>
           <a href="#fan-zone">Fan Zone</a>
+          <a href="#game">Game</a>
         </nav>
       </header>
 
@@ -126,6 +127,38 @@
             <div class="pulse-tile">
               <span>Moments</span>
               <strong id="moment-meter">12</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="content-band game-band" id="game">
+          <div class="section-heading">
+            <p class="eyebrow">Mini Game</p>
+            <h2>Penalty shootout</h2>
+          </div>
+          <div class="game-layout">
+            <div class="penalty-stage" aria-label="Penalty shootout field">
+              <div class="goal-net">
+                <span class="goal-zone left"></span>
+                <span class="goal-zone center"></span>
+                <span class="goal-zone right"></span>
+                <span class="keeper" id="keeper">GK</span>
+                <span class="ball" id="ball"></span>
+              </div>
+            </div>
+            <div class="game-panel">
+              <div class="game-score">
+                <span>Goals</span>
+                <strong id="game-goals">0</strong>
+                <span>Saves</span>
+                <strong id="game-saves">0</strong>
+              </div>
+              <p id="game-message">Pick a corner and beat the keeper.</p>
+              <div class="shot-buttons" aria-label="Shot direction">
+                <button class="button secondary shot-button" type="button" data-shot="left">Left</button>
+                <button class="button primary shot-button" type="button" data-shot="center">Center</button>
+                <button class="button secondary shot-button" type="button" data-shot="right">Right</button>
+              </div>
             </div>
           </div>
         </section>

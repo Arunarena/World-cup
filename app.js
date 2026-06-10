@@ -73,10 +73,18 @@ const moodButtons = document.querySelectorAll(".mood");
 const atmosphereButton = document.querySelector("#mute-atmosphere");
 const fullscreenButton = document.querySelector("#fullscreen-player");
 const livePanel = document.querySelector("#player");
+const shotButtons = document.querySelectorAll(".shot-button");
+const keeper = document.querySelector("#keeper");
+const ball = document.querySelector("#ball");
+const gameGoals = document.querySelector("#game-goals");
+const gameSaves = document.querySelector("#game-saves");
+const gameMessage = document.querySelector("#game-message");
 
 let selectedStream = streams[0].id;
 let animationMuted = false;
 let moodName = "opening";
+let goals = 0;
+let saves = 0;
 
 function renderFeeds() {
   feedGrid.innerHTML = streams
@@ -169,6 +177,46 @@ fullscreenButton.addEventListener("click", async () => {
 
 document.addEventListener("fullscreenchange", () => {
   fullscreenButton.textContent = document.fullscreenElement ? "Exit Fullscreen" : "Fullscreen";
+});
+
+function zonePosition(zone) {
+  return {
+    left: "17%",
+    center: "50%",
+    right: "83%",
+  }[zone];
+}
+
+function takeShot(target) {
+  const zones = ["left", "center", "right"];
+  const keeperZone = zones[Math.floor(Math.random() * zones.length)];
+  keeper.style.left = zonePosition(keeperZone);
+  ball.style.left = zonePosition(target);
+  ball.style.top = "22%";
+
+  const scored = target !== keeperZone;
+  if (scored) {
+    goals += 1;
+    gameMessage.textContent = "Goal. Pick another corner.";
+    ball.style.background = "var(--accent)";
+  } else {
+    saves += 1;
+    gameMessage.textContent = "Saved. Try to wrong-foot the keeper.";
+    ball.style.background = "white";
+  }
+
+  gameGoals.textContent = goals;
+  gameSaves.textContent = saves;
+
+  window.setTimeout(() => {
+    ball.style.left = "50%";
+    ball.style.top = "88%";
+    ball.style.background = "white";
+  }, 620);
+}
+
+shotButtons.forEach((button) => {
+  button.addEventListener("click", () => takeShot(button.dataset.shot));
 });
 
 const canvas = document.querySelector("#pitch-canvas");
