@@ -21,6 +21,8 @@
 
         <nav class="nav-links" aria-label="Primary navigation">
           <a href="#watch">Watch</a>
+          <a href="#scoreboard">Scores</a>
+          <a href="#streams">Streams</a>
           <a href="#fixtures">Fixtures</a>
           <a href="#teams">Teams</a>
           <a href="#fan-zone">Fan Zone</a>
@@ -39,7 +41,8 @@
             </p>
             <div class="hero-actions" aria-label="Main actions">
               <a class="button primary" href="#player">Open Live Player</a>
-              <a class="button secondary" href="#fixtures">View Schedule</a>
+              <a class="button secondary" href="#scoreboard">Live Scores</a>
+              <a class="button secondary" href="#streams">Streams</a>
             </div>
           </div>
 
@@ -79,10 +82,28 @@
           </aside>
         </section>
 
-        <section class="content-band feeds-band" aria-label="Available streams">
+        <section class="content-band scoreboard-band" id="scoreboard">
           <div class="section-heading">
-            <p class="eyebrow">Live Feeds</p>
-            <h2>Choose a match stream</h2>
+            <div>
+              <p class="eyebrow">ESPN Scoreboard</p>
+              <h2>World Cup scores</h2>
+            </div>
+            <span class="section-note" id="scoreboard-status">Loading scores</span>
+          </div>
+          <div class="scoreboard-grid" id="scoreboard-grid"></div>
+        </section>
+
+        <section class="content-band feeds-band" id="streams" aria-label="Available streams">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Streams</p>
+              <h2>Choose a match stream</h2>
+            </div>
+            <div class="stream-tabs" aria-label="Stream filters">
+              <button class="stream-tab active" type="button" data-stream-filter="all">All</button>
+              <button class="stream-tab" type="button" data-stream-filter="hd">HD</button>
+              <button class="stream-tab" type="button" data-stream-filter="fallback">Fallback</button>
+            </div>
           </div>
           <div class="feed-grid" id="feed-grid"></div>
         </section>

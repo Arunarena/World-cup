@@ -1,4 +1,5 @@
 const WATCHFOOTY_API = "https://api.watchfooty.st/api/v1";
+const ESPN_SCOREBOARD_API = "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard";
 
 let streams = [
   {
@@ -66,6 +67,8 @@ const moods = {
 
 const feedGrid = document.querySelector("#feed-grid");
 const fixtureList = document.querySelector("#fixture-list");
+const scoreboardGrid = document.querySelector("#scoreboard-grid");
+const scoreboardStatus = document.querySelector("#scoreboard-status");
 const streamFrame = document.querySelector("#stream-frame");
 const streamPlaceholder = document.querySelector("#stream-placeholder");
 const matchTitle = document.querySelector("#match-title");
@@ -81,12 +84,14 @@ const ball = document.querySelector("#ball");
 const gameGoals = document.querySelector("#game-goals");
 const gameSaves = document.querySelector("#game-saves");
 const gameMessage = document.querySelector("#game-message");
+const streamTabs = document.querySelectorAll(".stream-tab");
 
 let selectedStream = streams[0].id;
 let animationMuted = false;
 let moodName = "opening";
 let goals = 0;
 let saves = 0;
+let streamFilter = "all";
 
 function formatMatchTime(match) {
   const date = new Date(match.date || match.timestamp * 1000);
@@ -138,7 +143,52 @@ function mapWatchFootyStreams(matches, source) {
       url: stream.url,
       league: match.league,
       time: formatMatchTime(match),
+      quality: stream.quality || "",
+      provider: "watchfooty",
     }));
+  });
+}
+
+function teamFromCompetition(competition, homeAway) {
+  return competition.competitors.find((competitor) => competitor.homeAway === homeAway);
+}
+
+function formatEspnTime(event) {
+  const date = new Date(event.date);
+  if (Number.isNaN(date.getTime())) return "TBD";
+  return date.toLocaleString([], {
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function mapEspnScoreboard(events = []) {
+  return events.map((event) => {
+    const competition = event.competitions?.[0] || {};
+    const home = teamFromCompetition(competition, "home") || competition.competitors?.[0];
+    const away = teamFromCompetition(competition, "away") || competition.competitors?.[1];
+    const status = competition.status?.type || event.status?.type || {};
+
+    return {
+      id: event.id,
+      league: event.league?.name || "FIFA World Cup",
+      status: status.shortDetail || status.detail || status.description || "Scheduled",
+      time: formatEspnTime(event),
+      venue: competition.venue?.fullName || event.venue?.displayName || "",
+      broadcast: competition.broadcasts?.[0]?.names?.join(", ") || "",
+      home: {
+        name: home?.team?.shortDisplayName || home?.team?.displayName || "Home",
+        logo: home?.team?.logo || "",
+        score: home?.score || "0",
+      },
+      away: {
+        name: away?.team?.shortDisplayName || away?.team?.displayName || "Away",
+        logo: away?.team?.logo || "",
+        score: away?.score || "0",
+      },
+    };
   });
 }
 
@@ -183,8 +233,74 @@ async function loadWatchFootyStreams() {
   }
 }
 
+async function loadEspnScoreboard() {
+  try {
+    scoreboardGrid.setAttribute("aria-busy", "true");
+    const data = await fetchJson(ESPN_SCOREBOARD_API);
+    const games = mapEspnScoreboard(data.events || []);
+    renderScoreboard(games);
+    scoreboardStatus.textContent = `${data.leagues?.[0]?.name || "FIFA World Cup"} / ${games.length} matches`;
+  } catch (error) {
+    console.warn(error);
+    scoreboardStatus.textContent = "Scores unavailable";
+    scoreboardGrid.innerHTML = `
+      <article class="score-card">
+        <div class="score-card-header">
+          <span>ESPN scoreboard</span>
+          <span>Offline</span>
+        </div>
+        <p>Live scores could not load right now.</p>
+      </article>
+    `;
+  } finally {
+    scoreboardGrid.removeAttribute("aria-busy");
+  }
+}
+
+function streamMatchesFilter(stream) {
+  if (streamFilter === "hd") return String(stream.quality || stream.tag).toLowerCase().includes("hd");
+  if (streamFilter === "fallback") return stream.provider !== "watchfooty";
+  return true;
+}
+
+function renderScoreboard(games) {
+  scoreboardGrid.innerHTML = games
+    .slice(0, 12)
+    .map(
+      (game) => `
+        <article class="score-card">
+          <div class="score-card-header">
+            <span>${game.status}</span>
+            <span>${game.time}</span>
+          </div>
+          <div class="score-row">
+            <div class="score-team">
+              ${game.away.logo ? `<img src="${game.away.logo}" alt="" loading="lazy" />` : ""}
+              <span>${game.away.name}</span>
+            </div>
+            <strong class="score-value">${game.away.score}</strong>
+          </div>
+          <div class="score-row">
+            <div class="score-team">
+              ${game.home.logo ? `<img src="${game.home.logo}" alt="" loading="lazy" />` : ""}
+              <span>${game.home.name}</span>
+            </div>
+            <strong class="score-value">${game.home.score}</strong>
+          </div>
+          <div class="score-card-header">
+            <span>${game.venue}</span>
+            <span>${game.broadcast}</span>
+          </div>
+        </article>
+      `,
+    )
+    .join("");
+}
+
 function renderFeeds() {
-  feedGrid.innerHTML = streams
+  const visibleStreams = streams.filter(streamMatchesFilter);
+  feedGrid.innerHTML = visibleStreams.length
+    ? visibleStreams
     .map(
       (stream) => `
         <button class="feed-card ${stream.id === selectedStream ? "active" : ""}" type="button" data-stream="${stream.id}">
@@ -194,7 +310,14 @@ function renderFeeds() {
         </button>
       `,
     )
-    .join("");
+    .join("")
+    : `
+      <article class="feed-card">
+        <span class="tag">No streams</span>
+        <strong>No streams match this tab</strong>
+        <span>Try All or wait for the API to refresh.</span>
+      </article>
+    `;
 }
 
 function renderFixtures() {
@@ -251,6 +374,14 @@ feedGrid.addEventListener("click", (event) => {
   const card = event.target.closest("[data-stream]");
   if (!card) return;
   selectStream(card.dataset.stream);
+});
+
+streamTabs.forEach((button) => {
+  button.addEventListener("click", () => {
+    streamFilter = button.dataset.streamFilter;
+    streamTabs.forEach((tab) => tab.classList.toggle("active", tab === button));
+    renderFeeds();
+  });
 });
 
 moodButtons.forEach((button) => {
@@ -390,5 +521,6 @@ resizeCanvas();
 renderFixtures();
 selectStream(selectedStream);
 applyMood(moodName);
+loadEspnScoreboard();
 loadWatchFootyStreams();
 requestAnimationFrame(drawPitch);
