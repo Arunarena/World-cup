@@ -10,6 +10,8 @@
   --accent-3: #ff2f4f;
   --accent-4: #38a8ff;
   --shadow: 0 24px 80px rgba(92, 0, 18, 0.42);
+  --section-glow: rgba(255, 47, 79, 0.22);
+  --section-pop: rgba(255, 212, 71, 0.2);
 }
 
 * {
@@ -31,6 +33,27 @@ body {
   color: var(--text);
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  transition: background 450ms ease;
+}
+
+body[data-section-theme="scores"] {
+  --section-glow: rgba(56, 168, 255, 0.25);
+  --section-pop: rgba(20, 211, 154, 0.18);
+}
+
+body[data-section-theme="fixtures"] {
+  --section-glow: rgba(255, 212, 71, 0.25);
+  --section-pop: rgba(255, 47, 79, 0.18);
+}
+
+body[data-section-theme="fan"] {
+  --section-glow: rgba(20, 211, 154, 0.22);
+  --section-pop: rgba(56, 168, 255, 0.18);
+}
+
+body[data-section-theme="game"] {
+  --section-glow: rgba(255, 47, 79, 0.3);
+  --section-pop: rgba(255, 212, 71, 0.26);
 }
 
 button,
@@ -56,6 +79,29 @@ a {
   z-index: 1;
   min-height: 100vh;
   overflow: hidden;
+}
+
+.app-shell::before,
+.app-shell::after {
+  position: fixed;
+  inset: auto auto 8% -12rem;
+  z-index: -1;
+  width: min(44vw, 34rem);
+  aspect-ratio: 1;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--section-glow), transparent 66%);
+  content: "";
+  filter: blur(0.2rem);
+  pointer-events: none;
+  transition:
+    background 450ms ease,
+    transform 450ms ease;
+}
+
+.app-shell::after {
+  inset: 12% -12rem auto auto;
+  background: radial-gradient(circle, var(--section-pop), transparent 66%);
 }
 
 .topbar {
@@ -129,6 +175,39 @@ a {
   align-items: center;
   gap: clamp(1.25rem, 3vw, 3rem);
   padding: clamp(2rem, 5vw, 5rem) clamp(1rem, 4vw, 3rem);
+}
+
+.hero,
+.stream-room,
+.content-band,
+.split-band {
+  position: relative;
+}
+
+.hero::after,
+.stream-room::after {
+  position: absolute;
+  right: clamp(1rem, 5vw, 4rem);
+  bottom: clamp(1rem, 7vw, 5rem);
+  z-index: -1;
+  width: clamp(7rem, 17vw, 15rem);
+  aspect-ratio: 1;
+  border: 0.65rem solid rgba(255, 255, 255, 0.14);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 30%, rgba(255, 255, 255, 0.24), transparent 18%),
+    conic-gradient(
+      from 20deg,
+      rgba(255, 47, 79, 0.5),
+      rgba(255, 212, 71, 0.46),
+      rgba(20, 211, 154, 0.42),
+      rgba(56, 168, 255, 0.48),
+      rgba(255, 47, 79, 0.5)
+    );
+  content: "";
+  opacity: 0.42;
+  animation: trophySpin 18s linear infinite;
+  pointer-events: none;
 }
 
 .stream-room {
@@ -411,6 +490,51 @@ iframe {
   border-top: 1px solid var(--line);
   background: rgba(30, 8, 12, 0.58);
   backdrop-filter: blur(12px);
+  overflow: hidden;
+}
+
+.scoreboard-band {
+  background:
+    linear-gradient(135deg, rgba(56, 168, 255, 0.14), rgba(30, 8, 12, 0.58)),
+    rgba(30, 8, 12, 0.58);
+}
+
+.fixture-band {
+  background:
+    linear-gradient(135deg, rgba(255, 212, 71, 0.16), rgba(30, 8, 12, 0.58)),
+    rgba(30, 8, 12, 0.58);
+}
+
+.fan-band {
+  background:
+    linear-gradient(135deg, rgba(20, 211, 154, 0.14), rgba(30, 8, 12, 0.58)),
+    rgba(30, 8, 12, 0.58);
+}
+
+.game-band {
+  background:
+    linear-gradient(135deg, rgba(255, 47, 79, 0.2), rgba(255, 212, 71, 0.08)),
+    rgba(30, 8, 12, 0.58);
+}
+
+.feeds-band {
+  background:
+    linear-gradient(135deg, rgba(255, 47, 79, 0.16), rgba(56, 168, 255, 0.1)),
+    rgba(30, 8, 12, 0.58);
+}
+
+.content-band::after,
+.split-band::after {
+  position: absolute;
+  top: -4rem;
+  right: -4rem;
+  width: 13rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--section-pop), transparent 70%);
+  content: "";
+  opacity: 0.8;
+  pointer-events: none;
 }
 
 .section-heading {
@@ -620,6 +744,27 @@ iframe {
 
 .pulse-tile {
   padding: 1.1rem;
+}
+
+.pulse-tile,
+.score-card,
+.fixture,
+.feed-card,
+.hype-card {
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease,
+    border-color 220ms ease;
+}
+
+.pulse-tile:hover,
+.score-card:hover,
+.fixture:hover,
+.feed-card:hover,
+.hype-card:hover {
+  border-color: rgba(255, 212, 71, 0.5);
+  box-shadow: 0 18px 50px rgba(255, 47, 79, 0.18);
+  transform: translateY(-3px);
 }
 
 .pulse-tile strong {
@@ -855,6 +1000,55 @@ iframe {
 @keyframes pulse {
   70% {
     box-shadow: 0 0 0 1.6rem rgba(244, 197, 66, 0);
+  }
+}
+
+.fx-ball,
+.fx-confetti {
+  position: fixed;
+  left: var(--fx-x);
+  top: var(--fx-y);
+  z-index: 20;
+  pointer-events: none;
+}
+
+.fx-ball {
+  width: var(--fx-size, 2.2rem);
+  aspect-ratio: 1;
+  border: 0.22rem solid #111;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, white 0 24%, transparent 25%),
+    conic-gradient(#111 0 16%, white 16% 32%, #111 32% 48%, white 48% 66%, #111 66% 82%, white 82%);
+  box-shadow: 0 0 1.2rem rgba(255, 212, 71, 0.38);
+  animation: flyBall 900ms cubic-bezier(0.2, 0.82, 0.2, 1) forwards;
+}
+
+.fx-confetti {
+  width: 0.48rem;
+  height: 0.9rem;
+  border-radius: 999px;
+  background: var(--fx-color, var(--accent));
+  animation: confettiPop 760ms ease-out forwards;
+}
+
+@keyframes flyBall {
+  to {
+    opacity: 0;
+    transform: translate(var(--fx-dx), var(--fx-dy)) rotate(760deg) scale(0.45);
+  }
+}
+
+@keyframes confettiPop {
+  to {
+    opacity: 0;
+    transform: translate(var(--fx-dx), var(--fx-dy)) rotate(260deg);
+  }
+}
+
+@keyframes trophySpin {
+  to {
+    transform: rotate(360deg);
   }
 }
 

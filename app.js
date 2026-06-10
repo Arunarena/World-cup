@@ -93,6 +93,76 @@ let goals = 0;
 let saves = 0;
 let streamFilter = "all";
 
+function randomBetween(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+function sourcePoint(event) {
+  if (Number.isFinite(event?.clientX) && Number.isFinite(event?.clientY)) {
+    return { x: event.clientX, y: event.clientY };
+  }
+
+  const target = event?.currentTarget || event?.target;
+  if (target?.getBoundingClientRect) {
+    const rect = target.getBoundingClientRect();
+    return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+  }
+
+  return { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+}
+
+function launchFootballBurst(event, count = 1) {
+  const point = sourcePoint(event);
+
+  for (let index = 0; index < count; index += 1) {
+    const ballElement = document.createElement("span");
+    ballElement.className = "fx-ball";
+    ballElement.style.setProperty("--fx-x", `${point.x}px`);
+    ballElement.style.setProperty("--fx-y", `${point.y}px`);
+    ballElement.style.setProperty("--fx-size", `${randomBetween(1.15, 2.2)}rem`);
+    ballElement.style.setProperty("--fx-dx", `${randomBetween(-180, 180)}px`);
+    ballElement.style.setProperty("--fx-dy", `${randomBetween(-210, -70)}px`);
+    document.body.append(ballElement);
+    ballElement.addEventListener("animationend", () => ballElement.remove(), { once: true });
+  }
+}
+
+function launchConfetti(event, count = 10) {
+  const point = sourcePoint(event);
+  const colors = ["#ff2f4f", "#ffd447", "#14d39a", "#38a8ff", "#ffffff"];
+
+  for (let index = 0; index < count; index += 1) {
+    const piece = document.createElement("span");
+    piece.className = "fx-confetti";
+    piece.style.setProperty("--fx-x", `${point.x}px`);
+    piece.style.setProperty("--fx-y", `${point.y}px`);
+    piece.style.setProperty("--fx-color", colors[index % colors.length]);
+    piece.style.setProperty("--fx-dx", `${randomBetween(-120, 120)}px`);
+    piece.style.setProperty("--fx-dy", `${randomBetween(-145, 75)}px`);
+    document.body.append(piece);
+    piece.addEventListener("animationend", () => piece.remove(), { once: true });
+  }
+}
+
+function setSectionTheme() {
+  const sections = [
+    ["scoreboard", "scores"],
+    ["fixtures", "fixtures"],
+    ["teams", "fan"],
+    ["fan-zone", "fan"],
+    ["game", "game"],
+    ["streams", "game"],
+  ];
+  const midpoint = window.innerHeight * 0.45;
+  const active = sections.find(([id]) => {
+    const section = document.getElementById(id);
+    if (!section) return false;
+    const rect = section.getBoundingClientRect();
+    return rect.top <= midpoint && rect.bottom >= midpoint;
+  });
+  document.body.dataset.sectionTheme = active?.[1] || "hero";
+}
+
 function formatMatchTime(match) {
   const date = new Date(match.date || match.timestamp * 1000);
   if (Number.isNaN(date.getTime())) return "Live";
@@ -393,25 +463,42 @@ if (feedGrid) {
   feedGrid.addEventListener("click", (event) => {
     const card = event.target.closest("[data-stream]");
     if (!card) return;
+    launchFootballBurst(event, 2);
+    launchConfetti(event, 8);
     selectStream(card.dataset.stream);
+  });
+}
+
+if (scoreboardGrid) {
+  scoreboardGrid.addEventListener("click", (event) => {
+    const card = event.target.closest(".score-card");
+    if (!card) return;
+    launchFootballBurst(event, 1);
+    launchConfetti(event, 10);
   });
 }
 
 streamTabs.forEach((button) => {
   button.addEventListener("click", () => {
     streamFilter = button.dataset.streamFilter;
+    launchConfetti({ currentTarget: button }, 7);
     streamTabs.forEach((tab) => tab.classList.toggle("active", tab === button));
     renderFeeds();
   });
 });
 
 moodButtons.forEach((button) => {
-  button.addEventListener("click", () => applyMood(button.dataset.mood));
+  button.addEventListener("click", (event) => {
+    launchFootballBurst(event, 1);
+    launchConfetti(event, 10);
+    applyMood(button.dataset.mood);
+  });
 });
 
 if (atmosphereButton) {
-  atmosphereButton.addEventListener("click", () => {
+  atmosphereButton.addEventListener("click", (event) => {
     animationMuted = !animationMuted;
+    launchConfetti(event, animationMuted ? 4 : 12);
     atmosphereButton.setAttribute("aria-pressed", String(animationMuted));
     atmosphereButton.textContent = animationMuted ? "Still" : "Atmosphere";
   });
@@ -457,10 +544,13 @@ function takeShot(target) {
     goals += 1;
     gameMessage.textContent = "Goal. Pick another corner.";
     ball.classList.add("scored");
+    launchFootballBurst({ currentTarget: ball }, 3);
+    launchConfetti({ currentTarget: ball }, 18);
   } else {
     saves += 1;
     gameMessage.textContent = "Saved. Try to wrong-foot the keeper.";
     ball.classList.add("saved");
+    launchConfetti({ currentTarget: keeper }, 6);
   }
 
   gameGoals.textContent = goals;
@@ -474,7 +564,16 @@ function takeShot(target) {
 }
 
 shotButtons.forEach((button) => {
-  button.addEventListener("click", () => takeShot(button.dataset.shot));
+  button.addEventListener("click", (event) => {
+    launchFootballBurst(event, 1);
+    takeShot(button.dataset.shot);
+  });
+});
+
+document.querySelectorAll(".button, .icon-button, .hype-card, .score-card, .fixture, .pulse-tile").forEach((item) => {
+  item.addEventListener("click", (event) => {
+    launchConfetti(event, 6);
+  });
 });
 
 const canvas = document.querySelector("#pitch-canvas");
@@ -550,7 +649,9 @@ function drawPitch(time = 0) {
 }
 
 window.addEventListener("resize", resizeCanvas);
+window.addEventListener("scroll", setSectionTheme, { passive: true });
 resizeCanvas();
+setSectionTheme();
 renderFixtures();
 selectStream(selectedStream);
 applyMood(moodName);
