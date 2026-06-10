@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" role="img" aria-label="KickVerse icon">
+  <defs>
+    <linearGradient id="bg" x1="20" y1="18" x2="172" y2="178" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0b3145" />
+      <stop offset=".55" stop-color="#061015" />
+      <stop offset="1" stop-color="#0c744b" />
+    </linearGradient>
+    <linearGradient id="ring" x1="42" y1="36" x2="152" y2="158" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f7d65a" />
+      <stop offset=".45" stop-color="#39e2ba" />
+      <stop offset="1" stop-color="#78a8ff" />
+    </linearGradient>
+  </defs>
+  <rect width="192" height="192" rx="42" fill="url(#bg)" />
+  <circle cx="96" cy="96" r="58" fill="none" stroke="url(#ring)" stroke-width="10" />
+  <circle cx="96" cy="96" r="34" fill="#f3fbff" />
+  <path d="M96 58 116 78 108 106H84L76 78Z" fill="#07191d" />
+  <path d="M62 97 84 106 78 130 57 118Z" fill="#07191d" />
+  <path d="M130 97 108 106 114 130 135 118Z" fill="#07191d" />
+  <text x="96" y="166" text-anchor="middle" fill="#f3fbff" font-family="Arial, sans-serif" font-size="30" font-weight="900">KV</text>
+</svg>

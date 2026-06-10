@@ -111,8 +111,8 @@ a {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 1.25rem clamp(1rem, 4vw, 3.2rem);
+  gap: 0.85rem;
+  padding: 0.82rem clamp(0.85rem, 3vw, 2.4rem);
   border-bottom: 1px solid var(--line);
   background: rgba(3, 17, 24, 0.86);
   backdrop-filter: blur(18px);
@@ -121,12 +121,13 @@ a {
 .brand {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.78rem;
+  min-width: max-content;
 }
 
 .brand-mark {
   display: grid;
-  width: 3.45rem;
+  width: 3.05rem;
   aspect-ratio: 1;
   place-items: center;
   border: 1px solid rgba(247, 214, 90, 0.72);
@@ -135,9 +136,10 @@ a {
     radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.88), transparent 18%),
     conic-gradient(from 25deg, #f7d65a, #39e2ba, #78a8ff, #ff7f51, #f7d65a);
   color: #061015;
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   font-weight: 900;
   box-shadow: 0 0 2rem rgba(57, 226, 186, 0.3);
+  animation: brandPulse 2.8s ease-in-out infinite;
 }
 
 .brand strong,
@@ -146,13 +148,17 @@ a {
 }
 
 .brand small {
-  max-width: 24rem;
+  max-width: 22rem;
   color: var(--muted);
-  font-size: 0.88rem;
+  font-size: 0.78rem;
 }
 
 .brand strong {
-  font-size: clamp(1.1rem, 2vw, 1.45rem);
+  color: var(--text);
+  font-size: clamp(1.32rem, 2.2vw, 1.78rem);
+  line-height: 0.95;
+  text-shadow: 0 0 1.2rem rgba(57, 226, 186, 0.22);
+  animation: brandFocus 3.4s ease-in-out infinite;
 }
 
 .nav-links {
@@ -165,7 +171,7 @@ a {
 }
 
 .nav-links a {
-  padding: 0.62rem 0.95rem;
+  padding: 0.5rem 0.82rem;
   border-radius: 999px;
   color: var(--muted);
   font-weight: 750;
@@ -1206,6 +1212,36 @@ iframe {
 @keyframes trophySpin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes brandPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 1.1rem rgba(57, 226, 186, 0.28);
+    transform: rotate(0deg) scale(1);
+  }
+
+  50% {
+    box-shadow:
+      0 0 1.9rem rgba(57, 226, 186, 0.48),
+      0 0 3rem rgba(247, 214, 90, 0.18);
+    transform: rotate(4deg) scale(1.04);
+  }
+}
+
+@keyframes brandFocus {
+  0%,
+  100% {
+    color: var(--text);
+    text-shadow: 0 0 1.1rem rgba(57, 226, 186, 0.22);
+  }
+
+  50% {
+    color: #ffffff;
+    text-shadow:
+      0 0 1.4rem rgba(57, 226, 186, 0.42),
+      0 0 2.4rem rgba(120, 168, 255, 0.2);
   }
 }
 
