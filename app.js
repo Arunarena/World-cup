@@ -40,17 +40,17 @@ let fixtures = [
 
 const moods = {
   opening: {
-    accent: "#f4c542",
-    accentTwo: "#19b67a",
-    accentThree: "#e34f4f",
+    accent: "#ff2f4f",
+    accentTwo: "#ffd447",
+    accentThree: "#14d39a",
     noise: "82%",
     possession: "51 / 49",
     moments: "12",
   },
   final: {
-    accent: "#ffffff",
-    accentTwo: "#f4c542",
-    accentThree: "#19b67a",
+    accent: "#ffd447",
+    accentTwo: "#ff2f4f",
+    accentThree: "#38a8ff",
     noise: "96%",
     possession: "50 / 50",
     moments: "24",
@@ -150,7 +150,7 @@ function mapWatchFootyStreams(matches, source) {
 }
 
 function teamFromCompetition(competition, homeAway) {
-  return competition.competitors.find((competitor) => competitor.homeAway === homeAway);
+  return (competition.competitors || []).find((competitor) => competitor.homeAway === homeAway);
 }
 
 function formatEspnTime(event) {
@@ -207,6 +207,8 @@ async function fetchJson(url) {
 }
 
 async function loadWatchFootyStreams() {
+  if (!feedGrid) return;
+
   try {
     feedGrid.setAttribute("aria-busy", "true");
     const liveMatches = await fetchJson(`${WATCHFOOTY_API}/matches/football/live`);
@@ -234,6 +236,8 @@ async function loadWatchFootyStreams() {
 }
 
 async function loadEspnScoreboard() {
+  if (!scoreboardGrid || !scoreboardStatus) return;
+
   try {
     scoreboardGrid.setAttribute("aria-busy", "true");
     const data = await fetchJson(ESPN_SCOREBOARD_API);
@@ -264,6 +268,8 @@ function streamMatchesFilter(stream) {
 }
 
 function renderScoreboard(games) {
+  if (!scoreboardGrid) return;
+
   scoreboardGrid.innerHTML = games
     .slice(0, 12)
     .map(
@@ -298,6 +304,8 @@ function renderScoreboard(games) {
 }
 
 function renderFeeds() {
+  if (!feedGrid) return;
+
   const visibleStreams = streams.filter(streamMatchesFilter);
   feedGrid.innerHTML = visibleStreams.length
     ? visibleStreams
@@ -321,6 +329,8 @@ function renderFeeds() {
 }
 
 function renderFixtures() {
+  if (!fixtureList) return;
+
   fixtureList.innerHTML = fixtures
     .map(
       (fixture) => `
@@ -338,6 +348,12 @@ function renderFixtures() {
 }
 
 function selectStream(id) {
+  if (!streamFrame || !streamPlaceholder || !matchTitle || !matchStatus || !matchScore) {
+    selectedStream = id;
+    renderFeeds();
+    return;
+  }
+
   const stream = streams.find((item) => item.id === id) || streams[0];
   selectedStream = stream.id;
   matchTitle.textContent = stream.title;
@@ -361,20 +377,25 @@ function applyMood(name) {
   document.documentElement.style.setProperty("--accent", mood.accent);
   document.documentElement.style.setProperty("--accent-2", mood.accentTwo);
   document.documentElement.style.setProperty("--accent-3", mood.accentThree);
-  document.querySelector("#noise-meter").textContent = mood.noise;
-  document.querySelector("#possession-meter").textContent = mood.possession;
-  document.querySelector("#moment-meter").textContent = mood.moments;
+  const noiseMeter = document.querySelector("#noise-meter");
+  const possessionMeter = document.querySelector("#possession-meter");
+  const momentMeter = document.querySelector("#moment-meter");
+  if (noiseMeter) noiseMeter.textContent = mood.noise;
+  if (possessionMeter) possessionMeter.textContent = mood.possession;
+  if (momentMeter) momentMeter.textContent = mood.moments;
 
   moodButtons.forEach((button) => {
     button.classList.toggle("active", button.dataset.mood === name);
   });
 }
 
-feedGrid.addEventListener("click", (event) => {
-  const card = event.target.closest("[data-stream]");
-  if (!card) return;
-  selectStream(card.dataset.stream);
-});
+if (feedGrid) {
+  feedGrid.addEventListener("click", (event) => {
+    const card = event.target.closest("[data-stream]");
+    if (!card) return;
+    selectStream(card.dataset.stream);
+  });
+}
 
 streamTabs.forEach((button) => {
   button.addEventListener("click", () => {
@@ -388,23 +409,29 @@ moodButtons.forEach((button) => {
   button.addEventListener("click", () => applyMood(button.dataset.mood));
 });
 
-atmosphereButton.addEventListener("click", () => {
-  animationMuted = !animationMuted;
-  atmosphereButton.setAttribute("aria-pressed", String(animationMuted));
-  atmosphereButton.textContent = animationMuted ? "Still" : "Atmosphere";
-});
+if (atmosphereButton) {
+  atmosphereButton.addEventListener("click", () => {
+    animationMuted = !animationMuted;
+    atmosphereButton.setAttribute("aria-pressed", String(animationMuted));
+    atmosphereButton.textContent = animationMuted ? "Still" : "Atmosphere";
+  });
+}
 
-fullscreenButton.addEventListener("click", async () => {
-  if (document.fullscreenElement) {
-    await document.exitFullscreen();
-    return;
-  }
+if (fullscreenButton && livePanel) {
+  fullscreenButton.addEventListener("click", async () => {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
+      return;
+    }
 
-  await livePanel.requestFullscreen();
-});
+    await livePanel.requestFullscreen();
+  });
+}
 
 document.addEventListener("fullscreenchange", () => {
-  fullscreenButton.textContent = document.fullscreenElement ? "Exit Fullscreen" : "Fullscreen";
+  if (fullscreenButton) {
+    fullscreenButton.textContent = document.fullscreenElement ? "Exit Fullscreen" : "Fullscreen";
+  }
 });
 
 function zonePosition(zone) {
@@ -416,6 +443,8 @@ function zonePosition(zone) {
 }
 
 function takeShot(target) {
+  if (!keeper || !ball || !gameMessage || !gameGoals || !gameSaves) return;
+
   const zones = ["left", "center", "right"];
   const keeperZone = zones[Math.floor(Math.random() * zones.length)];
   keeper.style.left = zonePosition(keeperZone);
@@ -449,7 +478,7 @@ shotButtons.forEach((button) => {
 });
 
 const canvas = document.querySelector("#pitch-canvas");
-const context = canvas.getContext("2d");
+const context = canvas?.getContext("2d");
 const particles = Array.from({ length: 90 }, () => ({
   x: Math.random(),
   y: Math.random(),
@@ -459,6 +488,8 @@ const particles = Array.from({ length: 90 }, () => ({
 }));
 
 function resizeCanvas() {
+  if (!canvas || !context) return;
+
   const ratio = Math.min(window.devicePixelRatio || 1, 2);
   canvas.width = Math.floor(window.innerWidth * ratio);
   canvas.height = Math.floor(window.innerHeight * ratio);
@@ -468,6 +499,8 @@ function resizeCanvas() {
 }
 
 function drawPitch(time = 0) {
+  if (!context) return;
+
   const width = window.innerWidth;
   const height = window.innerHeight;
   const mood = moods[moodName];

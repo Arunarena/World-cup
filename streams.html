@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Streams | World Cup Live Arena</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <canvas id="pitch-canvas" aria-hidden="true"></canvas>
+
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="index.html" aria-label="World Cup Live Arena home">
+          <span class="brand-mark">WC</span>
+          <span>
+            <strong>World Cup Live Arena</strong>
+            <small>Dedicated stream room</small>
+          </span>
+        </a>
+
+        <nav class="nav-links" aria-label="Primary navigation">
+          <a href="index.html#watch">Home</a>
+          <a href="index.html#scoreboard">Scores</a>
+          <a href="streams.html">Streams</a>
+          <a href="index.html#fixtures">Fixtures</a>
+          <a href="index.html#game">Game</a>
+        </nav>
+      </header>
+
+      <main>
+        <section class="stream-room" id="watch">
+          <div class="stream-room-copy">
+            <p class="eyebrow">Stream Room</p>
+            <h1>Pick a feed. Fill the screen. Feel kickoff.</h1>
+            <p class="intro">
+              WatchFooty feeds load automatically when available. The original embed stays available
+              as a fallback.
+            </p>
+          </div>
+
+          <aside class="live-panel stream-page-player" id="player" aria-label="Live stream player">
+            <div class="score-strip">
+              <span id="match-status">Live soon</span>
+              <span id="match-score">0 - 0</span>
+            </div>
+
+            <div class="video-frame">
+              <iframe
+                id="stream-frame"
+                title="Selected match stream"
+                allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                allowfullscreen
+                referrerpolicy="strict-origin-when-cross-origin"
+              ></iframe>
+              <div class="stream-placeholder" id="stream-placeholder">
+                <span class="play-pulse" aria-hidden="true"></span>
+                <strong>Loading stream feeds</strong>
+                <p>Select a feed below if the first one does not start.</p>
+              </div>
+            </div>
+
+            <div class="match-meta">
+              <div>
+                <span class="label">Now showing</span>
+                <strong id="match-title">Opening Night Preview</strong>
+              </div>
+              <div class="player-actions">
+                <button class="icon-button" id="fullscreen-player" type="button">Fullscreen</button>
+                <button class="icon-button" id="mute-atmosphere" type="button" aria-pressed="false">
+                  Atmosphere
+                </button>
+              </div>
+            </div>
+          </aside>
+        </section>
+
+        <section class="content-band feeds-band" id="streams" aria-label="Available streams">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Available Feeds</p>
+              <h2>Choose a match stream</h2>
+            </div>
+            <div class="stream-tabs" aria-label="Stream filters">
+              <button class="stream-tab active" type="button" data-stream-filter="all">All</button>
+              <button class="stream-tab" type="button" data-stream-filter="hd">HD</button>
+              <button class="stream-tab" type="button" data-stream-filter="fallback">Fallback</button>
+            </div>
+          </div>
+          <div class="feed-grid" id="feed-grid"></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

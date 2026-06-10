@@ -11,7 +11,7 @@
 
     <div class="app-shell">
       <header class="topbar">
-        <a class="brand" href="#watch" aria-label="World Cup Live Arena home">
+        <a class="brand" href="index.html" aria-label="World Cup Live Arena home">
           <span class="brand-mark">WC</span>
           <span>
             <strong>World Cup Live Arena</strong>
@@ -20,9 +20,9 @@
         </a>
 
         <nav class="nav-links" aria-label="Primary navigation">
-          <a href="#watch">Watch</a>
+          <a href="index.html#watch">Home</a>
           <a href="#scoreboard">Scores</a>
-          <a href="#streams">Streams</a>
+          <a href="streams.html">Streams</a>
           <a href="#fixtures">Fixtures</a>
           <a href="#teams">Teams</a>
           <a href="#fan-zone">Fan Zone</a>
@@ -34,50 +34,36 @@
         <section class="hero" id="watch">
           <div class="hero-copy">
             <p class="eyebrow">2026 Matchday Hub</p>
-            <h1>World Cup live streaming built for every kick.</h1>
+            <h1>World Cup matchday energy, live scores, and fan games.</h1>
             <p class="intro">
-              Drop in official stream links when you have them. The page is already wired for
-              featured matches, alternate feeds, fixtures, and a responsive live-match layout.
+              Follow the scoreboard, scan fixtures, switch arena moods, and jump into the dedicated
+              stream room whenever kickoff gets close.
             </p>
             <div class="hero-actions" aria-label="Main actions">
-              <a class="button primary" href="#player">Open Live Player</a>
+              <a class="button primary" href="streams.html">Open Stream Room</a>
               <a class="button secondary" href="#scoreboard">Live Scores</a>
-              <a class="button secondary" href="#streams">Streams</a>
+              <a class="button secondary" href="#game">Play Shootout</a>
             </div>
           </div>
 
-          <aside class="live-panel" id="player" aria-label="Live stream player">
-            <div class="score-strip">
-              <span id="match-status">Live soon</span>
-              <span id="match-score">0 - 0</span>
+          <aside class="hype-board" aria-label="World Cup highlights">
+            <div class="hype-card main">
+              <span>Next spotlight</span>
+              <strong>Mexico vs South Africa</strong>
+              <small>Group stage countdown</small>
             </div>
-
-            <div class="video-frame">
-              <iframe
-                id="stream-frame"
-                title="Selected match stream"
-                allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-                allowfullscreen
-                referrerpolicy="strict-origin-when-cross-origin"
-              ></iframe>
-              <div class="stream-placeholder" id="stream-placeholder">
-                <span class="play-pulse" aria-hidden="true"></span>
-                <strong>Stream link placeholder</strong>
-                <p>Select a feed below. Official embed links can be added in <code>app.js</code>.</p>
-              </div>
+            <div class="hype-card">
+              <span>Host cities</span>
+              <strong>16</strong>
             </div>
-
-            <div class="match-meta">
-              <div>
-                <span class="label">Now showing</span>
-                <strong id="match-title">Opening Night Preview</strong>
-              </div>
-              <div class="player-actions">
-                <button class="icon-button" id="fullscreen-player" type="button">Fullscreen</button>
-                <button class="icon-button" id="mute-atmosphere" type="button" aria-pressed="false">
-                  Atmosphere
-                </button>
-              </div>
+            <div class="hype-card">
+              <span>Teams</span>
+              <strong>48</strong>
+            </div>
+            <div class="hype-ribbon">
+              <span>Live scores</span>
+              <span>Stream room</span>
+              <span>Penalty game</span>
             </div>
           </aside>
         </section>
@@ -91,21 +77,6 @@
             <span class="section-note" id="scoreboard-status">Loading scores</span>
           </div>
           <div class="scoreboard-grid" id="scoreboard-grid"></div>
-        </section>
-
-        <section class="content-band feeds-band" id="streams" aria-label="Available streams">
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">Streams</p>
-              <h2>Choose a match stream</h2>
-            </div>
-            <div class="stream-tabs" aria-label="Stream filters">
-              <button class="stream-tab active" type="button" data-stream-filter="all">All</button>
-              <button class="stream-tab" type="button" data-stream-filter="hd">HD</button>
-              <button class="stream-tab" type="button" data-stream-filter="fallback">Fallback</button>
-            </div>
-          </div>
-          <div class="feed-grid" id="feed-grid"></div>
         </section>
 
         <section class="content-band fixture-band" id="fixtures">
