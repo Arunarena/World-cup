@@ -71,6 +71,8 @@ const matchStatus = document.querySelector("#match-status");
 const matchScore = document.querySelector("#match-score");
 const moodButtons = document.querySelectorAll(".mood");
 const atmosphereButton = document.querySelector("#mute-atmosphere");
+const fullscreenButton = document.querySelector("#fullscreen-player");
+const livePanel = document.querySelector("#player");
 
 let selectedStream = streams[0].id;
 let animationMuted = false;
@@ -154,6 +156,19 @@ atmosphereButton.addEventListener("click", () => {
   animationMuted = !animationMuted;
   atmosphereButton.setAttribute("aria-pressed", String(animationMuted));
   atmosphereButton.textContent = animationMuted ? "Still" : "Atmosphere";
+});
+
+fullscreenButton.addEventListener("click", async () => {
+  if (document.fullscreenElement) {
+    await document.exitFullscreen();
+    return;
+  }
+
+  await livePanel.requestFullscreen();
+});
+
+document.addEventListener("fullscreenchange", () => {
+  fullscreenButton.textContent = document.fullscreenElement ? "Exit Fullscreen" : "Fullscreen";
 });
 
 const canvas = document.querySelector("#pitch-canvas");
