@@ -1,4 +1,6 @@
-const streams = [
+const WATCHFOOTY_API = "https://api.watchfooty.st/api/v1";
+
+let streams = [
   {
     id: "opening",
     title: "Opening Night Preview",
@@ -28,7 +30,7 @@ const streams = [
   },
 ];
 
-const fixtures = [
+let fixtures = [
   { time: "12:00", match: "Group Stage Match 1", venue: "Toronto" },
   { time: "15:00", match: "Group Stage Match 2", venue: "Mexico City" },
   { time: "18:00", match: "Group Stage Match 3", venue: "Los Angeles" },
@@ -85,6 +87,101 @@ let animationMuted = false;
 let moodName = "opening";
 let goals = 0;
 let saves = 0;
+
+function formatMatchTime(match) {
+  const date = new Date(match.date || match.timestamp * 1000);
+  if (Number.isNaN(date.getTime())) return "Live";
+  return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+}
+
+function formatScore(match) {
+  const scores = match.scores || {};
+  if (Number.isFinite(scores.home) && Number.isFinite(scores.away)) {
+    return `${scores.home} - ${scores.away}`;
+  }
+
+  const homeScore = Number(match.homeScore);
+  const awayScore = Number(match.awayScore);
+  if (Number.isFinite(homeScore) && Number.isFinite(awayScore)) {
+    return `${homeScore} - ${awayScore}`;
+  }
+
+  return match.status || "Live";
+}
+
+function formatTeams(match) {
+  if (match.teams?.home?.name && match.teams?.away?.name) {
+    return `${match.teams.home.name} vs ${match.teams.away.name}`;
+  }
+
+  return match.title || "Football match";
+}
+
+function streamTag(stream, source) {
+  const parts = [source];
+  if (stream.quality) parts.push(stream.quality);
+  if (stream.language) parts.push(stream.language);
+  if (stream.ads) parts.push("ads");
+  return parts.join(" / ");
+}
+
+function mapWatchFootyStreams(matches, source) {
+  return matches.flatMap((match) => {
+    const safeStreams = (match.streams || []).filter((stream) => stream.url && !stream.nsfw);
+    return safeStreams.slice(0, 3).map((stream, index) => ({
+      id: `watchfooty-${match.matchId}-${stream.id || index}`,
+      title: match.title || formatTeams(match),
+      teams: formatTeams(match),
+      status: match.currentMinute ? `${match.currentMinute}'` : match.status || source,
+      score: formatScore(match),
+      tag: streamTag(stream, source),
+      url: stream.url,
+      league: match.league,
+      time: formatMatchTime(match),
+    }));
+  });
+}
+
+function mapWatchFootyFixtures(matches) {
+  return matches.slice(0, 8).map((match) => ({
+    time: formatMatchTime(match),
+    match: match.title || formatTeams(match),
+    venue: match.league || match.sport || "Football",
+  }));
+}
+
+async function fetchJson(url) {
+  const response = await fetch(url, { cache: "no-store" });
+  if (!response.ok) throw new Error(`WatchFooty API ${response.status}`);
+  return response.json();
+}
+
+async function loadWatchFootyStreams() {
+  try {
+    feedGrid.setAttribute("aria-busy", "true");
+    const liveMatches = await fetchJson(`${WATCHFOOTY_API}/matches/football/live`);
+    const popularMatches =
+      liveMatches.length > 0 ? [] : await fetchJson(`${WATCHFOOTY_API}/matches/football/popular`);
+    const sourceMatches = liveMatches.length > 0 ? liveMatches : popularMatches;
+    const sourceLabel = liveMatches.length > 0 ? "WatchFooty live" : "WatchFooty popular";
+    const apiStreams = mapWatchFootyStreams(sourceMatches, sourceLabel);
+
+    if (apiStreams.length > 0) {
+      streams = [...apiStreams, ...streams];
+      fixtures = mapWatchFootyFixtures(sourceMatches);
+      selectedStream = streams[0].id;
+      renderFixtures();
+      selectStream(selectedStream);
+    } else {
+      renderFeeds();
+    }
+  } catch (error) {
+    console.warn(error);
+    renderFeeds();
+  } finally {
+    feedGrid.removeAttribute("aria-busy");
+  }
+}
 
 function renderFeeds() {
   feedGrid.innerHTML = streams
@@ -293,4 +390,5 @@ resizeCanvas();
 renderFixtures();
 selectStream(selectedStream);
 applyMood(moodName);
+loadWatchFootyStreams();
 requestAnimationFrame(drawPitch);
