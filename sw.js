@@ -1,4 +1,4 @@
-const CACHE_NAME = "kickverse-v1";
+const CACHE_NAME = "kickverse-v2";
 const APP_SHELL = [
   "./",
   "./index.html",

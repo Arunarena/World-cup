@@ -318,6 +318,15 @@ h2 {
   color: #151105;
 }
 
+.install-button {
+  border-color: rgba(57, 226, 186, 0.5);
+  background:
+    linear-gradient(135deg, rgba(57, 226, 186, 0.9), rgba(120, 168, 255, 0.86)),
+    var(--accent-2);
+  color: #031118;
+  box-shadow: 0 0.9rem 2.2rem rgba(57, 226, 186, 0.18);
+}
+
 .secondary,
 .icon-button,
 .mood {

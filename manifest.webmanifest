@@ -1,7 +1,7 @@
 {
   "name": "KickVerse",
   "short_name": "KickVerse",
-  "description": "World Cup streams, live scores, fixtures, and matchday games.",
+  "description": "KickVerse Stream for World Cup match feeds, live scores, fixtures, and matchday games.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -25,8 +25,8 @@
   "categories": ["sports", "entertainment"],
   "shortcuts": [
     {
-      "name": "Streams",
-      "short_name": "Streams",
+      "name": "KickVerse Stream",
+      "short_name": "Stream",
       "url": "./streams.html",
       "icons": [{ "src": "icons/icon-192.svg", "sizes": "192x192", "type": "image/svg+xml" }]
     },

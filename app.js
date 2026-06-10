@@ -8,7 +8,7 @@ let streams = [
     teams: "Canada vs Tournament Guest",
     status: "Live soon",
     score: "0 - 0",
-    tag: "Main feed",
+    tag: "KickVerse Stream",
     url: "https://junkieembeds.pages.dev/embed/fox-soccer-plus",
   },
   {
@@ -17,7 +17,7 @@ let streams = [
     teams: "Build-up and analysis",
     status: "On air",
     score: "Studio",
-    tag: "Pre-match",
+    tag: "KickVerse Studio",
     url: "",
   },
   {
@@ -26,7 +26,7 @@ let streams = [
     teams: "Wide angle match view",
     status: "Standby",
     score: "Alt feed",
-    tag: "Alternate",
+    tag: "KickVerse Backup",
     url: "",
   },
 ];
@@ -69,6 +69,7 @@ const feedGrid = document.querySelector("#feed-grid");
 const fixtureList = document.querySelector("#fixture-list");
 const scoreboardGrid = document.querySelector("#scoreboard-grid");
 const scoreboardStatus = document.querySelector("#scoreboard-status");
+const scheduleStatus = document.querySelector("#schedule-status");
 const streamFrame = document.querySelector("#stream-frame");
 const streamPlaceholder = document.querySelector("#stream-placeholder");
 const matchTitle = document.querySelector("#match-title");
@@ -85,6 +86,7 @@ const gameGoals = document.querySelector("#game-goals");
 const gameSaves = document.querySelector("#game-saves");
 const gameMessage = document.querySelector("#game-message");
 const streamTabs = document.querySelectorAll(".stream-tab");
+const installButtons = document.querySelectorAll("#install-app");
 
 let selectedStream = streams[0].id;
 let animationMuted = false;
@@ -92,6 +94,7 @@ let moodName = "opening";
 let goals = 0;
 let saves = 0;
 let streamFilter = "all";
+let deferredInstallPrompt = null;
 
 function randomBetween(min, max) {
   return Math.random() * (max - min) + min;
@@ -194,10 +197,9 @@ function formatTeams(match) {
 }
 
 function streamTag(stream, source) {
-  const parts = [source];
+  const parts = ["KickVerse Stream"];
   if (stream.quality) parts.push(stream.quality);
   if (stream.language) parts.push(stream.language);
-  if (stream.ads) parts.push("ads");
   return parts.join(" / ");
 }
 
@@ -215,7 +217,7 @@ function mapWatchFootyStreams(matches, source) {
       league: match.league,
       time: formatMatchTime(match),
       quality: stream.quality || "",
-      provider: "watchfooty",
+      provider: "kickverse-live",
     }));
   });
 }
@@ -271,9 +273,27 @@ function mapWatchFootyFixtures(matches) {
   }));
 }
 
+function mapEspnFixtures(events = []) {
+  return events.slice(0, 12).map((event) => {
+    const competition = event.competitions?.[0] || {};
+    const home = teamFromCompetition(competition, "home") || competition.competitors?.[0];
+    const away = teamFromCompetition(competition, "away") || competition.competitors?.[1];
+    const status = competition.status?.type || event.status?.type || {};
+    const homeName = home?.team?.shortDisplayName || home?.team?.displayName || "Home";
+    const awayName = away?.team?.shortDisplayName || away?.team?.displayName || "Away";
+
+    return {
+      time: formatEspnTime(event),
+      match: `${awayName} vs ${homeName}`,
+      venue: competition.venue?.fullName || event.venue?.displayName || event.league?.name || "FIFA World Cup",
+      status: status.shortDetail || status.detail || status.description || "Scheduled",
+    };
+  });
+}
+
 async function fetchJson(url) {
   const response = await fetch(url, { cache: "no-store" });
-  if (!response.ok) throw new Error(`WatchFooty API ${response.status}`);
+  if (!response.ok) throw new Error(`KickVerse data ${response.status}`);
   return response.json();
 }
 
@@ -286,14 +306,12 @@ async function loadWatchFootyStreams() {
     const popularMatches =
       liveMatches.length > 0 ? [] : await fetchJson(`${WATCHFOOTY_API}/matches/football/popular`);
     const sourceMatches = liveMatches.length > 0 ? liveMatches : popularMatches;
-    const sourceLabel = liveMatches.length > 0 ? "WatchFooty live" : "WatchFooty popular";
+    const sourceLabel = liveMatches.length > 0 ? "Live" : "Featured";
     const apiStreams = mapWatchFootyStreams(sourceMatches, sourceLabel);
 
     if (apiStreams.length > 0) {
       streams = [...apiStreams, ...streams];
-      fixtures = mapWatchFootyFixtures(sourceMatches);
       selectedStream = streams[0].id;
-      renderFixtures();
       selectStream(selectedStream);
     } else {
       renderFeeds();
@@ -332,9 +350,30 @@ async function loadEspnScoreboard() {
   }
 }
 
+async function loadEspnSchedule() {
+  if (!fixtureList) return;
+
+  try {
+    if (scheduleStatus) scheduleStatus.textContent = "Syncing ESPN";
+    fixtureList.setAttribute("aria-busy", "true");
+    const data = await fetchJson(ESPN_SCOREBOARD_API);
+    fixtures = mapEspnFixtures(data.events || []);
+    renderFixtures();
+    if (scheduleStatus) {
+      scheduleStatus.textContent = `${data.leagues?.[0]?.name || "FIFA World Cup"} / ${fixtures.length} fixtures`;
+    }
+  } catch (error) {
+    console.warn(error);
+    renderFixtures();
+    if (scheduleStatus) scheduleStatus.textContent = "Using saved schedule";
+  } finally {
+    fixtureList.removeAttribute("aria-busy");
+  }
+}
+
 function streamMatchesFilter(stream) {
   if (streamFilter === "hd") return String(stream.quality || stream.tag).toLowerCase().includes("hd");
-  if (streamFilter === "fallback") return stream.provider !== "watchfooty";
+  if (streamFilter === "fallback") return stream.provider !== "kickverse-live";
   return true;
 }
 
@@ -383,7 +422,7 @@ function renderFeeds() {
     .map(
       (stream) => `
         <button class="feed-card ${stream.id === selectedStream ? "active" : ""}" type="button" data-stream="${stream.id}">
-          <span class="tag">${stream.tag}</span>
+          <span class="tag">${stream.tag || "KickVerse Stream"}</span>
           <strong>${stream.title}</strong>
           <span>${stream.teams}</span>
         </button>
@@ -392,9 +431,9 @@ function renderFeeds() {
     .join("")
     : `
       <article class="feed-card">
-        <span class="tag">No streams</span>
-        <strong>No streams match this tab</strong>
-        <span>Try All or wait for the API to refresh.</span>
+        <span class="tag">KickVerse Stream</span>
+        <strong>No KickVerse streams match this tab</strong>
+        <span>Try All or wait for the feed list to refresh.</span>
       </article>
     `;
 }
@@ -411,7 +450,7 @@ function renderFixtures() {
             <strong>${fixture.match}</strong>
             <span>${fixture.venue}</span>
           </div>
-          <span>Preview</span>
+          <span>${fixture.status || "KickVerse Stream"}</span>
         </article>
       `,
     )
@@ -515,6 +554,34 @@ if (fullscreenButton && livePanel) {
     await livePanel.requestFullscreen();
   });
 }
+
+window.addEventListener("beforeinstallprompt", (event) => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+  installButtons.forEach((button) => {
+    button.disabled = false;
+    button.textContent = "Download App";
+  });
+});
+
+installButtons.forEach((button) => {
+  button.addEventListener("click", async (event) => {
+    launchFootballBurst(event, 1);
+    launchConfetti(event, 10);
+
+    if (deferredInstallPrompt) {
+      deferredInstallPrompt.prompt();
+      await deferredInstallPrompt.userChoice;
+      deferredInstallPrompt = null;
+      return;
+    }
+
+    button.textContent = "Use browser install";
+    window.setTimeout(() => {
+      button.textContent = "Download App";
+    }, 2200);
+  });
+});
 
 document.addEventListener("fullscreenchange", () => {
   if (fullscreenButton) {
@@ -657,6 +724,7 @@ renderFixtures();
 selectStream(selectedStream);
 applyMood(moodName);
 loadEspnScoreboard();
+loadEspnSchedule();
 loadWatchFootyStreams();
 requestAnimationFrame(drawPitch);
 

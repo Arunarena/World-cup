@@ -25,7 +25,7 @@
         <nav class="nav-links" aria-label="Primary navigation">
           <a href="index.html#watch">Home</a>
           <a href="#scoreboard">Scores</a>
-          <a href="streams.html">Streams</a>
+          <a href="streams.html">KickVerse Stream</a>
           <a href="#fixtures">Fixtures</a>
           <a href="#teams">Teams</a>
           <a href="#mini-players">Players</a>
@@ -40,13 +40,14 @@
             <p class="eyebrow">2026 Matchday Hub</p>
             <h1>World Cup matchday energy, live scores, and fan games.</h1>
             <p class="intro">
-              Follow the scoreboard, scan fixtures, switch arena moods, and jump into the dedicated
-              stream room whenever kickoff gets close.
+              Follow the scoreboard, scan ESPN fixtures, switch arena moods, and jump into
+              KickVerse Stream whenever kickoff gets close.
             </p>
             <div class="hero-actions" aria-label="Main actions">
-              <a class="button primary" href="streams.html">Open Stream Room</a>
+              <a class="button primary" href="streams.html">Open KickVerse Stream</a>
               <a class="button secondary" href="#scoreboard">Live Scores</a>
               <a class="button secondary" href="#game">Play Shootout</a>
+              <button class="button install-button" id="install-app" type="button">Download App</button>
             </div>
           </div>
 
@@ -66,7 +67,7 @@
             </div>
             <div class="hype-ribbon">
               <span>Live scores</span>
-              <span>Stream room</span>
+              <span>KickVerse Stream</span>
               <span>Penalty game</span>
             </div>
           </aside>
@@ -85,8 +86,11 @@
 
         <section class="content-band fixture-band" id="fixtures">
           <div class="section-heading">
-            <p class="eyebrow">Fixtures</p>
-            <h2>Today in the tournament</h2>
+            <div>
+              <p class="eyebrow">ESPN Schedule</p>
+              <h2>KickVerse Stream schedule</h2>
+            </div>
+            <span class="section-note" id="schedule-status">Syncing schedule</span>
           </div>
           <div class="fixture-list" id="fixture-list"></div>
         </section>
@@ -97,7 +101,7 @@
             <h2>Tap a section to change the arena mood</h2>
             <p>
               The stadium lighting, crowd ribbons, and match cards react as viewers move through
-              the page. This keeps the experience decorative without blocking the stream.
+              the page. This keeps the experience decorative without blocking KickVerse Stream.
             </p>
           </div>
           <div class="mood-board" aria-label="Arena mood controls">

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Streams | KickVerse</title>
+    <title>KickVerse Stream | KickVerse</title>
     <meta name="theme-color" content="#061015" />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="apple-touch-icon" href="icons/icon-192.svg" />
@@ -18,14 +18,14 @@
           <span class="brand-mark">KV</span>
           <span>
             <strong>KickVerse</strong>
-            <small>Dedicated stream room</small>
+            <small>Dedicated KickVerse Stream room</small>
           </span>
         </a>
 
         <nav class="nav-links" aria-label="Primary navigation">
           <a href="index.html#watch">Home</a>
           <a href="index.html#scoreboard">Scores</a>
-          <a href="streams.html">Streams</a>
+          <a href="streams.html">KickVerse Stream</a>
           <a href="index.html#fixtures">Fixtures</a>
           <a href="index.html#game">Game</a>
         </nav>
@@ -34,15 +34,19 @@
       <main>
         <section class="stream-room" id="watch">
           <div class="stream-room-copy">
-            <p class="eyebrow">Stream Room</p>
-            <h1>Pick a feed. Fill the screen. Feel kickoff.</h1>
+            <p class="eyebrow">KickVerse Stream Room</p>
+            <h1>Pick a KickVerse stream. Fill the screen. Feel kickoff.</h1>
             <p class="intro">
-              WatchFooty feeds load automatically when available. The original embed stays available
-              as a fallback.
+              KickVerse Stream prepares available match feeds in one focused player, with backups
+              kept behind the scenes.
             </p>
+            <div class="hero-actions" aria-label="Stream room actions">
+              <button class="button install-button" id="install-app" type="button">Download App</button>
+              <a class="button secondary" href="index.html#fixtures">Schedule</a>
+            </div>
           </div>
 
-          <aside class="live-panel stream-page-player" id="player" aria-label="Live stream player">
+          <aside class="live-panel stream-page-player" id="player" aria-label="KickVerse Stream player">
             <div class="score-strip">
               <span id="match-status">Live soon</span>
               <span id="match-score">0 - 0</span>
@@ -51,15 +55,15 @@
             <div class="video-frame">
               <iframe
                 id="stream-frame"
-                title="Selected match stream"
+                title="Selected KickVerse Stream"
                 allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
                 allowfullscreen
                 referrerpolicy="strict-origin-when-cross-origin"
               ></iframe>
               <div class="stream-placeholder" id="stream-placeholder">
                 <span class="play-pulse" aria-hidden="true"></span>
-                <strong>Loading stream feeds</strong>
-                <p>Select a feed below if the first one does not start.</p>
+                <strong>Loading KickVerse Stream</strong>
+                <p>Select another KickVerse Stream below if the first one does not start.</p>
               </div>
             </div>
 
@@ -78,16 +82,16 @@
           </aside>
         </section>
 
-        <section class="content-band feeds-band" id="streams" aria-label="Available streams">
+        <section class="content-band feeds-band" id="streams" aria-label="Available KickVerse streams">
           <div class="section-heading">
             <div>
-              <p class="eyebrow">Available Feeds</p>
-              <h2>Choose a match stream</h2>
+              <p class="eyebrow">KickVerse Stream</p>
+              <h2>Choose a KickVerse stream</h2>
             </div>
             <div class="stream-tabs" aria-label="Stream filters">
               <button class="stream-tab active" type="button" data-stream-filter="all">All</button>
               <button class="stream-tab" type="button" data-stream-filter="hd">HD</button>
-              <button class="stream-tab" type="button" data-stream-filter="fallback">Fallback</button>
+              <button class="stream-tab" type="button" data-stream-filter="fallback">Backup</button>
             </div>
           </div>
           <div class="feed-grid" id="feed-grid"></div>

@@ -1,5 +1,7 @@
-# World Cup Live Arena
+# KickVerse Stream
 
-Static live-streaming landing page for World Cup match viewing.
+Static KickVerse Stream app for World Cup match viewing, ESPN scores, ESPN schedules, and matchday games.
 
-The main stream URL is configured in `app.js` inside the `streams` array.
+Use the Download App button on the live site to install the PWA. The Android wrapper lives in `android/`;
+open that folder in Android Studio or run the GitHub Actions `Build Android APK` workflow to generate a
+debug APK artifact.
