@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>World Cup Live Arena</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <canvas id="pitch-canvas" aria-hidden="true"></canvas>
+
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#watch" aria-label="World Cup Live Arena home">
+          <span class="brand-mark">WC</span>
+          <span>
+            <strong>World Cup Live Arena</strong>
+            <small>Live matches, fixtures, and matchday atmosphere</small>
+          </span>
+        </a>
+
+        <nav class="nav-links" aria-label="Primary navigation">
+          <a href="#watch">Watch</a>
+          <a href="#fixtures">Fixtures</a>
+          <a href="#teams">Teams</a>
+          <a href="#fan-zone">Fan Zone</a>
+        </nav>
+      </header>
+
+      <main>
+        <section class="hero" id="watch">
+          <div class="hero-copy">
+            <p class="eyebrow">2026 Matchday Hub</p>
+            <h1>World Cup live streaming built for every kick.</h1>
+            <p class="intro">
+              Drop in official stream links when you have them. The page is already wired for
+              featured matches, alternate feeds, fixtures, and a responsive live-match layout.
+            </p>
+            <div class="hero-actions" aria-label="Main actions">
+              <a class="button primary" href="#player">Open Live Player</a>
+              <a class="button secondary" href="#fixtures">View Schedule</a>
+            </div>
+          </div>
+
+          <aside class="live-panel" id="player" aria-label="Live stream player">
+            <div class="score-strip">
+              <span id="match-status">Live soon</span>
+              <span id="match-score">0 - 0</span>
+            </div>
+
+            <div class="video-frame">
+              <iframe
+                id="stream-frame"
+                title="Selected match stream"
+                allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                allowfullscreen
+              ></iframe>
+              <div class="stream-placeholder" id="stream-placeholder">
+                <span class="play-pulse" aria-hidden="true"></span>
+                <strong>Stream link placeholder</strong>
+                <p>Select a feed below. Official embed links can be added in <code>app.js</code>.</p>
+              </div>
+            </div>
+
+            <div class="match-meta">
+              <div>
+                <span class="label">Now showing</span>
+                <strong id="match-title">Opening Night Preview</strong>
+              </div>
+              <button class="icon-button" id="mute-atmosphere" type="button" aria-pressed="false">
+                Atmosphere
+              </button>
+            </div>
+          </aside>
+        </section>
+
+        <section class="content-band feeds-band" aria-label="Available streams">
+          <div class="section-heading">
+            <p class="eyebrow">Live Feeds</p>
+            <h2>Choose a match stream</h2>
+          </div>
+          <div class="feed-grid" id="feed-grid"></div>
+        </section>
+
+        <section class="content-band fixture-band" id="fixtures">
+          <div class="section-heading">
+            <p class="eyebrow">Fixtures</p>
+            <h2>Today in the tournament</h2>
+          </div>
+          <div class="fixture-list" id="fixture-list"></div>
+        </section>
+
+        <section class="split-band" id="teams">
+          <div>
+            <p class="eyebrow">Interactive Stand</p>
+            <h2>Tap a section to change the arena mood</h2>
+            <p>
+              The stadium lighting, crowd ribbons, and match cards react as viewers move through
+              the page. This keeps the experience decorative without blocking the stream.
+            </p>
+          </div>
+          <div class="mood-board" aria-label="Arena mood controls">
+            <button type="button" data-mood="opening" class="mood active">Opening Night</button>
+            <button type="button" data-mood="final" class="mood">Final</button>
+            <button type="button" data-mood="rivalry" class="mood">Rivalry</button>
+          </div>
+        </section>
+
+        <section class="content-band fan-band" id="fan-zone">
+          <div class="section-heading">
+            <p class="eyebrow">Fan Zone</p>
+            <h2>Match pulse</h2>
+          </div>
+          <div class="pulse-grid">
+            <div class="pulse-tile">
+              <span>Noise</span>
+              <strong id="noise-meter">82%</strong>
+            </div>
+            <div class="pulse-tile">
+              <span>Possession</span>
+              <strong id="possession-meter">51 / 49</strong>
+            </div>
+            <div class="pulse-tile">
+              <span>Moments</span>
+              <strong id="moment-meter">12</strong>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
