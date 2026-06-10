@@ -476,28 +476,60 @@ iframe {
 }
 
 .penalty-stage {
+  position: relative;
+  overflow: hidden;
   min-height: clamp(18rem, 42vh, 30rem);
   padding: clamp(1rem, 3vw, 2rem);
   background:
-    linear-gradient(rgba(255, 255, 255, 0.08) 2px, transparent 2px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 2px, transparent 2px),
-    linear-gradient(180deg, rgba(25, 182, 122, 0.22), rgba(7, 18, 15, 0.82));
+    radial-gradient(ellipse at 50% 0%, rgba(244, 197, 66, 0.22), transparent 48%),
+    linear-gradient(180deg, rgba(26, 75, 57, 0.86), rgba(7, 18, 15, 0.92));
+  perspective: 900px;
+}
+
+.stadium-arc {
+  position: absolute;
+  inset: -20% -8% auto;
+  height: 42%;
+  border-radius: 0 0 50% 50%;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.16) 0 0.2rem,
+      transparent 0.2rem 1.1rem
+    ),
+    linear-gradient(180deg, rgba(227, 79, 79, 0.3), rgba(25, 182, 122, 0.08));
+  filter: drop-shadow(0 1.5rem 2.5rem rgba(0, 0, 0, 0.35));
+}
+
+.field-3d {
+  position: relative;
+  height: 100%;
+  min-height: 18rem;
+  transform: rotateX(58deg) translateY(1.5rem);
+  transform-origin: 50% 100%;
+  border-radius: 8px;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.12) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.1) 2px, transparent 2px),
+    repeating-linear-gradient(90deg, #16824f 0 11%, #116d43 11% 22%);
   background-size:
     4rem 4rem,
     4rem 4rem,
     auto;
+  box-shadow: inset 0 0 0 0.22rem rgba(255, 255, 255, 0.42);
 }
 
 .goal-net {
   position: relative;
   height: 100%;
-  min-height: 16rem;
+  min-height: 18rem;
   border: 0.35rem solid rgba(255, 255, 255, 0.72);
   border-bottom: 0;
   background:
     linear-gradient(rgba(255, 255, 255, 0.14) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.14) 1px, transparent 1px);
   background-size: 2rem 2rem;
+  transform-style: preserve-3d;
 }
 
 .goal-zone {
@@ -521,7 +553,7 @@ iframe {
   border-right: 0;
 }
 
-.keeper,
+.player,
 .ball {
   position: absolute;
   display: grid;
@@ -531,29 +563,96 @@ iframe {
     left 260ms ease,
     top 260ms ease,
     transform 260ms ease,
-    background 260ms ease;
+    background 260ms ease,
+    scale 260ms ease;
+}
+
+.player {
+  width: 4.3rem;
+  height: 6rem;
+  transform: translate(-50%, -50%) rotateX(-58deg);
+  transform-style: preserve-3d;
+  z-index: 3;
 }
 
 .keeper {
   left: 50%;
-  top: 42%;
-  width: 4.2rem;
+  top: 38%;
+}
+
+.striker {
+  left: 50%;
+  top: 82%;
+}
+
+.player-head {
+  width: 1.5rem;
   aspect-ratio: 1;
-  border-radius: 8px;
-  background: var(--accent-3);
+  border-radius: 50%;
+  background: #f1c39b;
+  box-shadow: inset -0.25rem -0.18rem 0 rgba(82, 39, 20, 0.22);
+}
+
+.player-body {
+  display: grid;
+  width: 3.2rem;
+  height: 3.7rem;
+  place-items: center;
+  border: 0.16rem solid rgba(255, 255, 255, 0.5);
+  border-radius: 0.85rem 0.85rem 0.35rem 0.35rem;
+  background:
+    linear-gradient(90deg, transparent 0 18%, rgba(255, 255, 255, 0.18) 18% 28%, transparent 28%),
+    var(--accent-3);
   color: white;
   font-weight: 900;
+  box-shadow:
+    inset 0 -0.45rem 0 rgba(0, 0, 0, 0.2),
+    0 1rem 1.7rem rgba(0, 0, 0, 0.34);
+}
+
+.striker .player-body {
+  background:
+    linear-gradient(90deg, transparent 0 18%, rgba(17, 17, 17, 0.16) 18% 28%, transparent 28%),
+    var(--accent);
+  color: #10140d;
+}
+
+.player-shadow {
+  position: absolute;
+  bottom: -0.7rem;
+  width: 4.2rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.36);
+  filter: blur(0.15rem);
 }
 
 .ball {
   left: 50%;
-  top: 88%;
+  top: 72%;
   width: 2.2rem;
   aspect-ratio: 1;
   border: 0.28rem solid #111;
   border-radius: 50%;
-  background: white;
-  box-shadow: 0 0 2rem rgba(244, 197, 66, 0.28);
+  background:
+    radial-gradient(circle at 35% 30%, white 0 28%, transparent 29%),
+    conic-gradient(#111 0 18%, white 18% 32%, #111 32% 48%, white 48% 68%, #111 68% 82%, white 82%);
+  box-shadow:
+    0 0 2rem rgba(244, 197, 66, 0.28),
+    0 1.4rem 1.2rem rgba(0, 0, 0, 0.32);
+  z-index: 4;
+  transform: translate(-50%, -50%) rotateX(-58deg);
+}
+
+.ball.scored {
+  scale: 0.8;
+  box-shadow:
+    0 0 3rem rgba(244, 197, 66, 0.72),
+    0 1.4rem 1.2rem rgba(0, 0, 0, 0.28);
+}
+
+.ball.saved {
+  scale: 1.15;
 }
 
 .game-panel {
@@ -704,5 +803,13 @@ iframe {
   .shot-buttons,
   .game-score {
     grid-template-columns: 1fr;
+  }
+
+  .penalty-stage {
+    min-height: 24rem;
+  }
+
+  .field-3d {
+    min-height: 20rem;
   }
 }

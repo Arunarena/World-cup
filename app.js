@@ -181,9 +181,9 @@ document.addEventListener("fullscreenchange", () => {
 
 function zonePosition(zone) {
   return {
-    left: "17%",
+    left: "18%",
     center: "50%",
-    right: "83%",
+    right: "82%",
   }[zone];
 }
 
@@ -192,17 +192,18 @@ function takeShot(target) {
   const keeperZone = zones[Math.floor(Math.random() * zones.length)];
   keeper.style.left = zonePosition(keeperZone);
   ball.style.left = zonePosition(target);
-  ball.style.top = "22%";
+  ball.style.top = "18%";
+  ball.classList.remove("scored", "saved");
 
   const scored = target !== keeperZone;
   if (scored) {
     goals += 1;
     gameMessage.textContent = "Goal. Pick another corner.";
-    ball.style.background = "var(--accent)";
+    ball.classList.add("scored");
   } else {
     saves += 1;
     gameMessage.textContent = "Saved. Try to wrong-foot the keeper.";
-    ball.style.background = "white";
+    ball.classList.add("saved");
   }
 
   gameGoals.textContent = goals;
@@ -210,8 +211,8 @@ function takeShot(target) {
 
   window.setTimeout(() => {
     ball.style.left = "50%";
-    ball.style.top = "88%";
-    ball.style.background = "white";
+    ball.style.top = "72%";
+    ball.classList.remove("scored", "saved");
   }, 620);
 }
 
