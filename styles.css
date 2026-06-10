@@ -1,17 +1,17 @@
 :root {
-  --bg: #160709;
-  --panel: rgba(30, 8, 12, 0.8);
-  --panel-solid: #260d12;
-  --text: #fff7ef;
-  --muted: #ffd6ca;
+  --bg: #061015;
+  --panel: rgba(7, 24, 33, 0.82);
+  --panel-solid: #092333;
+  --text: #f3fbff;
+  --muted: #b8d8e0;
   --line: rgba(255, 255, 255, 0.16);
-  --accent: #ffd447;
-  --accent-2: #14d39a;
-  --accent-3: #ff2f4f;
-  --accent-4: #38a8ff;
-  --shadow: 0 24px 80px rgba(92, 0, 18, 0.42);
-  --section-glow: rgba(255, 47, 79, 0.22);
-  --section-pop: rgba(255, 212, 71, 0.2);
+  --accent: #f7d65a;
+  --accent-2: #39e2ba;
+  --accent-3: #78a8ff;
+  --accent-4: #ff7f51;
+  --shadow: 0 24px 80px rgba(0, 18, 30, 0.55);
+  --section-glow: rgba(57, 226, 186, 0.22);
+  --section-pop: rgba(120, 168, 255, 0.2);
 }
 
 * {
@@ -26,10 +26,10 @@ body {
   min-height: 100vh;
   margin: 0;
   background:
-    radial-gradient(circle at 18% 12%, rgba(255, 212, 71, 0.25), transparent 24rem),
-    radial-gradient(circle at 84% 18%, rgba(56, 168, 255, 0.24), transparent 28rem),
-    radial-gradient(circle at 50% 100%, rgba(20, 211, 154, 0.2), transparent 24rem),
-    linear-gradient(135deg, #190509 0%, #5c0715 44%, #160709 100%);
+    radial-gradient(circle at 16% 10%, rgba(247, 214, 90, 0.22), transparent 24rem),
+    radial-gradient(circle at 84% 18%, rgba(120, 168, 255, 0.24), transparent 28rem),
+    radial-gradient(circle at 48% 100%, rgba(57, 226, 186, 0.18), transparent 26rem),
+    linear-gradient(135deg, #061015 0%, #0b3145 46%, #07191d 100%);
   color: var(--text);
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -37,23 +37,23 @@ body {
 }
 
 body[data-section-theme="scores"] {
-  --section-glow: rgba(56, 168, 255, 0.25);
-  --section-pop: rgba(20, 211, 154, 0.18);
+  --section-glow: rgba(120, 168, 255, 0.28);
+  --section-pop: rgba(57, 226, 186, 0.18);
 }
 
 body[data-section-theme="fixtures"] {
-  --section-glow: rgba(255, 212, 71, 0.25);
-  --section-pop: rgba(255, 47, 79, 0.18);
+  --section-glow: rgba(247, 214, 90, 0.26);
+  --section-pop: rgba(255, 127, 81, 0.18);
 }
 
 body[data-section-theme="fan"] {
-  --section-glow: rgba(20, 211, 154, 0.22);
-  --section-pop: rgba(56, 168, 255, 0.18);
+  --section-glow: rgba(57, 226, 186, 0.24);
+  --section-pop: rgba(120, 168, 255, 0.18);
 }
 
 body[data-section-theme="game"] {
-  --section-glow: rgba(255, 47, 79, 0.3);
-  --section-pop: rgba(255, 212, 71, 0.26);
+  --section-glow: rgba(255, 127, 81, 0.24);
+  --section-pop: rgba(247, 214, 90, 0.26);
 }
 
 button,
@@ -112,28 +112,32 @@ a {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 1rem clamp(1rem, 4vw, 3rem);
+  padding: 1.25rem clamp(1rem, 4vw, 3.2rem);
   border-bottom: 1px solid var(--line);
-  background: rgba(24, 4, 9, 0.82);
+  background: rgba(3, 17, 24, 0.86);
   backdrop-filter: blur(18px);
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
+  gap: 1rem;
 }
 
 .brand-mark {
   display: grid;
-  width: 2.8rem;
+  width: 3.45rem;
   aspect-ratio: 1;
   place-items: center;
-  border: 1px solid rgba(244, 197, 66, 0.55);
+  border: 1px solid rgba(247, 214, 90, 0.72);
   border-radius: 50%;
-  background: linear-gradient(145deg, #ffd447, #ff2f4f 55%, #14d39a);
-  color: #08110e;
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.88), transparent 18%),
+    conic-gradient(from 25deg, #f7d65a, #39e2ba, #78a8ff, #ff7f51, #f7d65a);
+  color: #061015;
+  font-size: 0.92rem;
   font-weight: 900;
+  box-shadow: 0 0 2rem rgba(57, 226, 186, 0.3);
 }
 
 .brand strong,
@@ -142,9 +146,13 @@ a {
 }
 
 .brand small {
-  max-width: 20rem;
+  max-width: 24rem;
   color: var(--muted);
-  font-size: 0.78rem;
+  font-size: 0.88rem;
+}
+
+.brand strong {
+  font-size: clamp(1.1rem, 2vw, 1.45rem);
 }
 
 .nav-links {
@@ -157,9 +165,10 @@ a {
 }
 
 .nav-links a {
-  padding: 0.5rem 0.85rem;
+  padding: 0.62rem 0.95rem;
   border-radius: 999px;
   color: var(--muted);
+  font-weight: 750;
 }
 
 .nav-links a:hover,
@@ -198,11 +207,11 @@ a {
     radial-gradient(circle at 34% 30%, rgba(255, 255, 255, 0.24), transparent 18%),
     conic-gradient(
       from 20deg,
-      rgba(255, 47, 79, 0.5),
-      rgba(255, 212, 71, 0.46),
-      rgba(20, 211, 154, 0.42),
-      rgba(56, 168, 255, 0.48),
-      rgba(255, 47, 79, 0.5)
+      rgba(120, 168, 255, 0.5),
+      rgba(247, 214, 90, 0.46),
+      rgba(57, 226, 186, 0.42),
+      rgba(255, 127, 81, 0.38),
+      rgba(120, 168, 255, 0.5)
     );
   content: "";
   opacity: 0.42;
@@ -322,7 +331,7 @@ h2 {
   border: 1px solid var(--line);
   border-radius: 8px;
   background:
-    linear-gradient(145deg, rgba(255, 47, 79, 0.32), rgba(255, 212, 71, 0.08)),
+    linear-gradient(145deg, rgba(120, 168, 255, 0.24), rgba(57, 226, 186, 0.08)),
     rgba(255, 255, 255, 0.08);
   box-shadow: var(--shadow);
   backdrop-filter: blur(16px);
@@ -339,8 +348,8 @@ h2 {
   grid-column: 1 / -1;
   min-height: 18rem;
   background:
-    linear-gradient(135deg, rgba(255, 47, 79, 0.52), rgba(255, 212, 71, 0.16)),
-    radial-gradient(circle at 76% 26%, rgba(20, 211, 154, 0.26), transparent 16rem),
+    linear-gradient(135deg, rgba(120, 168, 255, 0.36), rgba(247, 214, 90, 0.14)),
+    radial-gradient(circle at 76% 26%, rgba(57, 226, 186, 0.28), transparent 16rem),
     rgba(255, 255, 255, 0.08);
 }
 
@@ -407,7 +416,7 @@ h2 {
 }
 
 .score-strip {
-  background: linear-gradient(90deg, rgba(255, 47, 79, 0.38), rgba(255, 212, 71, 0.24));
+  background: linear-gradient(90deg, rgba(120, 168, 255, 0.34), rgba(57, 226, 186, 0.22));
   font-weight: 900;
 }
 
@@ -472,7 +481,7 @@ iframe {
   aspect-ratio: 1;
   border: 0.45rem solid var(--accent);
   border-radius: 50%;
-  box-shadow: 0 0 0 0 rgba(244, 197, 66, 0.45);
+  box-shadow: 0 0 0 0 rgba(247, 214, 90, 0.45);
   animation: pulse 1.8s infinite;
 }
 
@@ -488,39 +497,47 @@ iframe {
   margin: 0 clamp(1rem, 4vw, 3rem) 1rem;
   padding: clamp(1.2rem, 3vw, 2rem);
   border-top: 1px solid var(--line);
-  background: rgba(30, 8, 12, 0.58);
+  background: rgba(7, 24, 33, 0.6);
   backdrop-filter: blur(12px);
   overflow: hidden;
 }
 
 .scoreboard-band {
   background:
-    linear-gradient(135deg, rgba(56, 168, 255, 0.14), rgba(30, 8, 12, 0.58)),
-    rgba(30, 8, 12, 0.58);
+    linear-gradient(135deg, rgba(120, 168, 255, 0.16), rgba(7, 24, 33, 0.6)),
+    rgba(7, 24, 33, 0.6);
 }
 
 .fixture-band {
   background:
-    linear-gradient(135deg, rgba(255, 212, 71, 0.16), rgba(30, 8, 12, 0.58)),
-    rgba(30, 8, 12, 0.58);
+    linear-gradient(135deg, rgba(247, 214, 90, 0.16), rgba(7, 24, 33, 0.6)),
+    rgba(7, 24, 33, 0.6);
 }
 
 .fan-band {
   background:
-    linear-gradient(135deg, rgba(20, 211, 154, 0.14), rgba(30, 8, 12, 0.58)),
-    rgba(30, 8, 12, 0.58);
+    linear-gradient(135deg, rgba(57, 226, 186, 0.14), rgba(7, 24, 33, 0.6)),
+    rgba(7, 24, 33, 0.6);
 }
 
 .game-band {
   background:
-    linear-gradient(135deg, rgba(255, 47, 79, 0.2), rgba(255, 212, 71, 0.08)),
-    rgba(30, 8, 12, 0.58);
+    linear-gradient(135deg, rgba(255, 127, 81, 0.14), rgba(247, 214, 90, 0.08)),
+    rgba(7, 24, 33, 0.6);
 }
 
 .feeds-band {
   background:
-    linear-gradient(135deg, rgba(255, 47, 79, 0.16), rgba(56, 168, 255, 0.1)),
-    rgba(30, 8, 12, 0.58);
+    linear-gradient(135deg, rgba(120, 168, 255, 0.15), rgba(57, 226, 186, 0.08)),
+    rgba(7, 24, 33, 0.6);
+}
+
+.mini-players-band {
+  background:
+    radial-gradient(circle at 14% 18%, rgba(247, 214, 90, 0.16), transparent 18rem),
+    radial-gradient(circle at 82% 28%, rgba(120, 168, 255, 0.18), transparent 20rem),
+    linear-gradient(135deg, rgba(57, 226, 186, 0.12), rgba(7, 24, 33, 0.62)),
+    rgba(7, 24, 33, 0.62);
 }
 
 .content-band::after,
@@ -647,7 +664,7 @@ iframe {
 
 .stream-tab.active {
   border-color: var(--accent);
-  background: rgba(244, 197, 66, 0.16);
+  background: rgba(247, 214, 90, 0.16);
 }
 
 .feed-card {
@@ -661,8 +678,8 @@ iframe {
 }
 
 .feed-card.active {
-  border-color: rgba(255, 212, 71, 0.75);
-  background: rgba(255, 47, 79, 0.18);
+  border-color: rgba(247, 214, 90, 0.75);
+  background: rgba(120, 168, 255, 0.16);
 }
 
 .feed-card strong {
@@ -735,11 +752,149 @@ iframe {
 
 .mood.active {
   border-color: var(--accent);
-  background: rgba(244, 197, 66, 0.18);
+  background: rgba(247, 214, 90, 0.18);
 }
 
 .pulse-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.mini-pitch {
+  position: relative;
+  display: grid;
+  min-height: clamp(21rem, 45vw, 32rem);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: end;
+  gap: clamp(0.6rem, 2vw, 1.2rem);
+  padding: clamp(1rem, 4vw, 3rem);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.14) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.12) 2px, transparent 2px),
+    radial-gradient(circle at 50% 52%, transparent 0 12%, rgba(255, 255, 255, 0.38) 12.2% 12.7%, transparent 13%),
+    repeating-linear-gradient(90deg, #12895a 0 12%, #0c744b 12% 24%);
+  background-size:
+    4.5rem 4.5rem,
+    4.5rem 4.5rem,
+    auto,
+    auto;
+  box-shadow:
+    inset 0 0 0 0.22rem rgba(255, 255, 255, 0.28),
+    0 2rem 6rem rgba(0, 18, 30, 0.28);
+  overflow: hidden;
+  perspective: 900px;
+}
+
+.mini-pitch::before {
+  position: absolute;
+  inset: 8% 6%;
+  border: 0.16rem solid rgba(255, 255, 255, 0.36);
+  content: "";
+  pointer-events: none;
+}
+
+.mini-player {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  gap: 0.12rem;
+  min-height: 15rem;
+  transform: rotateX(6deg);
+  animation: miniPlayerBounce 2.6s ease-in-out infinite;
+}
+
+.mini-player:nth-child(2) {
+  animation-delay: 0.35s;
+}
+
+.mini-player:nth-child(3) {
+  animation-delay: 0.7s;
+}
+
+.mini-player:nth-child(4) {
+  animation-delay: 1.05s;
+}
+
+.mini-player-head {
+  width: clamp(2.1rem, 4vw, 3rem);
+  aspect-ratio: 1;
+  border: 0.18rem solid rgba(255, 255, 255, 0.72);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 36%, rgba(255, 255, 255, 0.32), transparent 18%),
+    linear-gradient(145deg, #d69a6d, #7a482c);
+  box-shadow: 0 0.7rem 1.5rem rgba(0, 0, 0, 0.2);
+}
+
+.mini-player-shirt {
+  display: grid;
+  width: clamp(3.6rem, 7vw, 5rem);
+  height: clamp(4.4rem, 8vw, 6.2rem);
+  place-items: center;
+  border: 0.18rem solid rgba(255, 255, 255, 0.62);
+  border-radius: 42% 42% 14% 14%;
+  background:
+    linear-gradient(90deg, transparent 0 22%, rgba(255, 255, 255, 0.22) 22% 28%, transparent 28% 72%, rgba(255, 255, 255, 0.22) 72% 78%, transparent 78%),
+    linear-gradient(145deg, #78a8ff, #0e4a83);
+  color: #fff;
+  font-size: clamp(1.35rem, 3vw, 2.3rem);
+  font-weight: 950;
+  text-shadow: 0 0.15rem 0.35rem rgba(0, 0, 0, 0.35);
+}
+
+.mini-player-legs {
+  width: clamp(3.2rem, 6vw, 4.8rem);
+  height: clamp(2.8rem, 5vw, 3.8rem);
+  border-radius: 0 0 999px 999px;
+  background:
+    linear-gradient(90deg, transparent 0 35%, rgba(255, 255, 255, 0.22) 35% 43%, transparent 43% 57%, rgba(255, 255, 255, 0.22) 57% 65%, transparent 65%),
+    linear-gradient(180deg, #081c2b, #02080c);
+}
+
+.mini-player strong {
+  padding: 0.28rem 0.55rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(3, 17, 24, 0.72);
+  color: var(--text);
+  font-size: 0.78rem;
+}
+
+.winger .mini-player-shirt {
+  background:
+    linear-gradient(90deg, transparent 0 22%, rgba(255, 255, 255, 0.22) 22% 28%, transparent 28% 72%, rgba(255, 255, 255, 0.22) 72% 78%, transparent 78%),
+    linear-gradient(145deg, #39e2ba, #087253);
+}
+
+.keeper-mini .mini-player-shirt {
+  background:
+    linear-gradient(90deg, transparent 0 22%, rgba(255, 255, 255, 0.22) 22% 28%, transparent 28% 72%, rgba(255, 255, 255, 0.22) 72% 78%, transparent 78%),
+    linear-gradient(145deg, #f7d65a, #b97000);
+  color: #061015;
+}
+
+.striker-mini .mini-player-shirt {
+  background:
+    linear-gradient(90deg, transparent 0 22%, rgba(255, 255, 255, 0.22) 22% 28%, transparent 28% 72%, rgba(255, 255, 255, 0.22) 72% 78%, transparent 78%),
+    linear-gradient(145deg, #ff7f51, #904015);
+}
+
+.mini-ball {
+  position: absolute;
+  right: 18%;
+  bottom: 18%;
+  z-index: 2;
+  width: clamp(2rem, 4vw, 3.2rem);
+  aspect-ratio: 1;
+  border: 0.2rem solid #0b1012;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, white 0 24%, transparent 25%),
+    conic-gradient(#101010 0 16%, white 16% 32%, #101010 32% 48%, white 48% 66%, #101010 66% 82%, white 82%);
+  box-shadow: 0 0.8rem 1.8rem rgba(0, 0, 0, 0.35);
+  animation: miniBallRoll 4.2s ease-in-out infinite;
 }
 
 .pulse-tile {
@@ -750,7 +905,8 @@ iframe {
 .score-card,
 .fixture,
 .feed-card,
-.hype-card {
+.hype-card,
+.mini-player {
   transition:
     transform 220ms ease,
     box-shadow 220ms ease,
@@ -761,9 +917,10 @@ iframe {
 .score-card:hover,
 .fixture:hover,
 .feed-card:hover,
-.hype-card:hover {
-  border-color: rgba(255, 212, 71, 0.5);
-  box-shadow: 0 18px 50px rgba(255, 47, 79, 0.18);
+.hype-card:hover,
+.mini-player:hover {
+  border-color: rgba(247, 214, 90, 0.55);
+  box-shadow: 0 18px 50px rgba(57, 226, 186, 0.16);
   transform: translateY(-3px);
 }
 
@@ -793,7 +950,7 @@ iframe {
   min-height: clamp(18rem, 42vh, 30rem);
   padding: clamp(1rem, 3vw, 2rem);
   background:
-    radial-gradient(ellipse at 50% 0%, rgba(244, 197, 66, 0.22), transparent 48%),
+    radial-gradient(ellipse at 50% 0%, rgba(247, 214, 90, 0.22), transparent 48%),
     linear-gradient(180deg, rgba(26, 75, 57, 0.86), rgba(7, 18, 15, 0.92));
   perspective: 900px;
 }
@@ -809,7 +966,7 @@ iframe {
       rgba(255, 255, 255, 0.16) 0 0.2rem,
       transparent 0.2rem 1.1rem
     ),
-    linear-gradient(180deg, rgba(227, 79, 79, 0.3), rgba(25, 182, 122, 0.08));
+    linear-gradient(180deg, rgba(120, 168, 255, 0.25), rgba(57, 226, 186, 0.08));
   filter: drop-shadow(0 1.5rem 2.5rem rgba(0, 0, 0, 0.35));
 }
 
@@ -950,7 +1107,7 @@ iframe {
     radial-gradient(circle at 35% 30%, white 0 28%, transparent 29%),
     conic-gradient(#111 0 18%, white 18% 32%, #111 32% 48%, white 48% 68%, #111 68% 82%, white 82%);
   box-shadow:
-    0 0 2rem rgba(244, 197, 66, 0.28),
+    0 0 2rem rgba(247, 214, 90, 0.28),
     0 1.4rem 1.2rem rgba(0, 0, 0, 0.32);
   z-index: 4;
   transform: translate(-50%, -50%) rotateX(-58deg);
@@ -959,7 +1116,7 @@ iframe {
 .ball.scored {
   scale: 0.8;
   box-shadow:
-    0 0 3rem rgba(244, 197, 66, 0.72),
+    0 0 3rem rgba(247, 214, 90, 0.72),
     0 1.4rem 1.2rem rgba(0, 0, 0, 0.28);
 }
 
@@ -999,7 +1156,7 @@ iframe {
 
 @keyframes pulse {
   70% {
-    box-shadow: 0 0 0 1.6rem rgba(244, 197, 66, 0);
+    box-shadow: 0 0 0 1.6rem rgba(247, 214, 90, 0);
   }
 }
 
@@ -1049,6 +1206,28 @@ iframe {
 @keyframes trophySpin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes miniPlayerBounce {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+
+  50% {
+    translate: 0 -0.45rem;
+  }
+}
+
+@keyframes miniBallRoll {
+  0%,
+  100% {
+    transform: translateX(0) rotate(0deg);
+  }
+
+  50% {
+    transform: translateX(-38vw) rotate(-540deg);
   }
 }
 
@@ -1111,7 +1290,8 @@ iframe {
   .fixture-list,
   .pulse-grid,
   .scoreboard-grid,
-  .mood-board {
+  .mood-board,
+  .mini-pitch {
     grid-template-columns: 1fr;
   }
 
@@ -1128,6 +1308,10 @@ iframe {
 
   .brand small {
     display: none;
+  }
+
+  .brand-mark {
+    width: 3rem;
   }
 
   .nav-links a {
@@ -1181,6 +1365,10 @@ iframe {
   .shot-buttons,
   .game-score {
     grid-template-columns: 1fr;
+  }
+
+  .mini-player {
+    min-height: 12rem;
   }
 
   .penalty-stage {

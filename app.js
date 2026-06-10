@@ -149,6 +149,7 @@ function setSectionTheme() {
     ["scoreboard", "scores"],
     ["fixtures", "fixtures"],
     ["teams", "fan"],
+    ["mini-players", "fan"],
     ["fan-zone", "fan"],
     ["game", "game"],
     ["streams", "game"],
@@ -570,7 +571,7 @@ shotButtons.forEach((button) => {
   });
 });
 
-document.querySelectorAll(".button, .icon-button, .hype-card, .score-card, .fixture, .pulse-tile").forEach((item) => {
+document.querySelectorAll(".button, .icon-button, .hype-card, .score-card, .fixture, .pulse-tile, .mini-player").forEach((item) => {
   item.addEventListener("click", (event) => {
     launchConfetti(event, 6);
   });
