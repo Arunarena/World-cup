@@ -1104,7 +1104,7 @@ iframe {
   text-transform: uppercase;
 }
 
-.arcade-pitch {
+.game-canvas-wrap {
   position: relative;
   min-height: clamp(28rem, 56vw, 43rem);
   border: 1px solid rgba(255, 255, 255, 0.25);
@@ -1112,89 +1112,18 @@ iframe {
   outline: none;
   overflow: hidden;
   background:
-    radial-gradient(circle at 50% 50%, transparent 0 12%, rgba(255, 255, 255, 0.34) 12.2% 12.7%, transparent 13%),
-    linear-gradient(rgba(255, 255, 255, 0.14) 2px, transparent 2px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.13) 2px, transparent 2px),
-    repeating-linear-gradient(90deg, #148556 0 10%, #0e7049 10% 20%);
-  background-size:
-    auto,
-    4rem 4rem,
-    4rem 4rem,
-    auto;
+    radial-gradient(circle at 50% 16%, rgba(57, 226, 186, 0.16), transparent 22rem),
+    linear-gradient(135deg, rgba(3, 17, 24, 0.82), rgba(11, 49, 69, 0.7));
   box-shadow:
     inset 0 0 0 0.22rem rgba(255, 255, 255, 0.32),
     0 2rem 5rem rgba(0, 0, 0, 0.25);
 }
 
-.arcade-midline {
-  position: absolute;
-  inset: 0 auto 0 50%;
-  width: 0.16rem;
-  background: rgba(255, 255, 255, 0.36);
-}
-
-.arcade-goal {
-  position: absolute;
-  top: 36%;
-  width: 2.2rem;
-  height: 28%;
-  border: 0.18rem solid rgba(255, 255, 255, 0.72);
-  background:
-    linear-gradient(rgba(255, 255, 255, 0.18) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.18) 1px, transparent 1px);
-  background-size: 0.6rem 0.6rem;
-}
-
-.user-goal {
-  left: 0;
-  border-left: 0;
-}
-
-.opponent-goal {
-  right: 0;
-  border-right: 0;
-}
-
-.arcade-player,
-.arcade-ball {
-  position: absolute;
-  display: grid;
-  place-items: center;
-  transform: translate(-50%, -50%);
-}
-
-.arcade-player {
-  width: clamp(3.8rem, 8vw, 5.4rem);
-  aspect-ratio: 0.72;
-  z-index: 2;
-  border: 0.18rem solid rgba(255, 255, 255, 0.62);
-  border-radius: 48% 48% 18% 18%;
-  background:
-    radial-gradient(circle at 50% 16%, #d69a6d 0 16%, transparent 17%),
-    linear-gradient(145deg, var(--kit-a), var(--kit-b));
-  box-shadow:
-    inset 0 -0.5rem 0 rgba(0, 0, 0, 0.2),
-    0 1.2rem 2rem rgba(0, 0, 0, 0.28);
-  color: #061015;
-  font-size: clamp(0.78rem, 2vw, 1rem);
-  font-weight: 950;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
-}
-
-.opponent-player {
-  filter: saturate(0.88);
-}
-
-.arcade-ball {
-  z-index: 3;
-  width: clamp(1.6rem, 3.6vw, 2.5rem);
-  aspect-ratio: 1;
-  border: 0.22rem solid #101010;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 35% 30%, white 0 24%, transparent 25%),
-    conic-gradient(#101010 0 16%, white 16% 32%, #101010 32% 48%, white 48% 66%, #101010 66% 82%, white 82%);
-  box-shadow: 0 0.8rem 1.5rem rgba(0, 0, 0, 0.36);
+#game-canvas {
+  display: block;
+  width: 100%;
+  height: clamp(28rem, 56vw, 43rem);
+  touch-action: none;
 }
 
 .match-console {

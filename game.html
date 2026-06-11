@@ -18,7 +18,7 @@
           <span class="brand-mark">KV</span>
           <span>
             <strong>KickVerse</strong>
-            <small>Country Clash arcade match</small>
+            <small>Country Clash 3D match</small>
           </span>
         </a>
 
@@ -37,7 +37,7 @@
             <p class="eyebrow">KickVerse Game</p>
             <h1>Country Clash</h1>
             <p class="intro">
-              Pick a World Cup country, control the attack, and score before the clock runs out.
+              Pick a World Cup country, control an 11-player squad, and score on a full 3D pitch.
             </p>
           </div>
 
@@ -81,17 +81,8 @@
             </div>
           </div>
 
-          <div class="arcade-pitch" id="arcade-pitch" tabindex="0" aria-label="Playable football match">
-            <div class="arcade-goal user-goal" aria-hidden="true"></div>
-            <div class="arcade-goal opponent-goal" aria-hidden="true"></div>
-            <div class="arcade-midline" aria-hidden="true"></div>
-            <div class="arcade-player opponent-player" id="opponent-player">
-              <span id="opponent-kit">BRA</span>
-            </div>
-            <div class="arcade-player user-player" id="user-player">
-              <span id="user-kit">CAN</span>
-            </div>
-            <div class="arcade-ball" id="arcade-ball"></div>
+          <div class="game-canvas-wrap" id="game-canvas-wrap" tabindex="0" aria-label="Playable 3D football match">
+            <canvas id="game-canvas"></canvas>
           </div>
 
           <div class="match-console">
@@ -111,6 +102,7 @@
       </main>
     </div>
 
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
     <script src="app.js"></script>
     <script src="game.js"></script>
   </body>
