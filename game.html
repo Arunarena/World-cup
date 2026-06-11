@@ -71,6 +71,7 @@
           </div>
 
           <div class="game-canvas-wrap" id="game-canvas-wrap" tabindex="0" aria-label="Playable 3D football match">
+            <button class="fullscreen-button" id="fullscreen-button" type="button">Fullscreen</button>
             <canvas id="game-canvas"></canvas>
           </div>
 
@@ -85,8 +86,10 @@
                 <span class="joystick-thumb" id="joystick-thumb"></span>
               </div>
               <div class="action-pad" aria-label="Match actions">
+                <button class="control-button primary-control shoot-control" data-action="shoot" type="button">Shoot</button>
                 <button class="control-button sprint-control" data-action="sprint" type="button">Sprint</button>
-                <button class="control-button primary-control" data-action="shoot" type="button">Shoot</button>
+                <button class="control-button" data-action="pass" type="button">Pass</button>
+                <button class="control-button" data-action="tackle" type="button">Tackle</button>
               </div>
             </div>
           </div>

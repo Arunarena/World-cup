@@ -42,6 +42,7 @@ const matchClock = document.querySelector("#match-clock");
 const matchMessage = document.querySelector("#match-message");
 const staminaFill = document.querySelector("#stamina-fill");
 const newMatchButton = document.querySelector("#new-match");
+const fullscreenButton = document.querySelector("#fullscreen-button");
 const joystick = document.querySelector("#movement-joystick");
 const joystickThumb = document.querySelector("#joystick-thumb");
 const actionButtons = document.querySelectorAll("[data-action]");
@@ -116,24 +117,69 @@ function refreshMaterials() {
   opponentAccentMaterial.diffuseColor = color3(state.opponent.colors[1]);
 }
 
+function makeLimb(name, radius, height, position, rotation, material, parent) {
+  const limb = BABYLON.MeshBuilder.CreateCylinder(name, { diameter: radius, height, tessellation: 14 }, scene);
+  limb.position = position;
+  limb.rotation = rotation;
+  limb.parent = parent;
+  limb.material = material;
+  return limb;
+}
+
 function makePlayer(name, team, index, position) {
   const root = new BABYLON.TransformNode(name, scene);
   root.position = new BABYLON.Vector3(position[0], 0, position[1]);
+  const kitMaterial = team === "user" ? userMaterial : opponentMaterial;
+  const accentMaterial = team === "user" ? userAccentMaterial : opponentAccentMaterial;
+  const skinMaterial = makeMaterial(`${name}-skin`, "#d69a6d");
+  const shortsMaterial = makeMaterial(`${name}-shorts`, team === "user" ? state.user.colors[1] : state.opponent.colors[1]);
+  const bootMaterial = makeMaterial(`${name}-boots`, "#111820");
 
-  const body = BABYLON.MeshBuilder.CreateCapsule(`${name}-body`, { height: 3.4, radius: 0.62 }, scene);
-  body.position.y = 1.8;
+  const body = BABYLON.MeshBuilder.CreateCylinder(`${name}-torso`, {
+    diameterTop: 0.95,
+    diameterBottom: 0.68,
+    height: 1.65,
+    tessellation: 18,
+  }, scene);
+  body.position.y = 2.35;
   body.parent = root;
-  body.material = team === "user" ? userMaterial : opponentMaterial;
+  body.material = kitMaterial;
 
-  const stripe = BABYLON.MeshBuilder.CreateBox(`${name}-stripe`, { width: 0.72, height: 1.1, depth: 0.08 }, scene);
-  stripe.position.set(0, 1.88, -0.58);
+  const stripe = BABYLON.MeshBuilder.CreateBox(`${name}-stripe`, { width: 0.5, height: 1.25, depth: 0.09 }, scene);
+  stripe.position.set(0, 2.35, -0.48);
   stripe.parent = root;
-  stripe.material = team === "user" ? userAccentMaterial : opponentAccentMaterial;
+  stripe.material = accentMaterial;
 
-  const head = BABYLON.MeshBuilder.CreateSphere(`${name}-head`, { diameter: 0.86, segments: 16 }, scene);
-  head.position.y = 3.65;
+  const shorts = BABYLON.MeshBuilder.CreateBox(`${name}-shorts`, { width: 0.9, height: 0.48, depth: 0.62 }, scene);
+  shorts.position.y = 1.42;
+  shorts.parent = root;
+  shorts.material = shortsMaterial;
+
+  const head = BABYLON.MeshBuilder.CreateSphere(`${name}-head`, { diameter: 0.72, segments: 16 }, scene);
+  head.position.y = 3.46;
   head.parent = root;
-  head.material = makeMaterial(`${name}-skin`, "#d69a6d");
+  head.material = skinMaterial;
+
+  const hair = BABYLON.MeshBuilder.CreateSphere(`${name}-hair`, { diameter: 0.76, segments: 12 }, scene);
+  hair.scaling.y = 0.42;
+  hair.position.y = 3.74;
+  hair.parent = root;
+  hair.material = makeMaterial(`${name}-hair-mat`, "#172027");
+
+  makeLimb(`${name}-left-arm`, 0.22, 1.25, new BABYLON.Vector3(-0.68, 2.08, 0), new BABYLON.Vector3(0.18, 0, -0.22), skinMaterial, root);
+  makeLimb(`${name}-right-arm`, 0.22, 1.25, new BABYLON.Vector3(0.68, 2.08, 0), new BABYLON.Vector3(-0.18, 0, 0.22), skinMaterial, root);
+  makeLimb(`${name}-left-leg`, 0.25, 1.28, new BABYLON.Vector3(-0.24, 0.73, 0), new BABYLON.Vector3(0.08, 0, 0.05), skinMaterial, root);
+  makeLimb(`${name}-right-leg`, 0.25, 1.28, new BABYLON.Vector3(0.24, 0.73, 0), new BABYLON.Vector3(-0.08, 0, -0.05), skinMaterial, root);
+
+  const leftBoot = BABYLON.MeshBuilder.CreateBox(`${name}-left-boot`, { width: 0.34, height: 0.18, depth: 0.68 }, scene);
+  leftBoot.position.set(-0.24, 0.12, -0.16);
+  leftBoot.parent = root;
+  leftBoot.material = bootMaterial;
+
+  const rightBoot = BABYLON.MeshBuilder.CreateBox(`${name}-right-boot`, { width: 0.34, height: 0.18, depth: 0.68 }, scene);
+  rightBoot.position.set(0.24, 0.12, -0.16);
+  rightBoot.parent = root;
+  rightBoot.material = bootMaterial;
 
   const marker = BABYLON.MeshBuilder.CreateTorus(`${name}-marker`, { diameter: 2.05, thickness: 0.08 }, scene);
   marker.rotation.x = Math.PI / 2;
@@ -173,10 +219,64 @@ function makeGoal(name, x) {
   net.material = netMaterial;
 }
 
+function addCloud(name, x, y, z, scale = 1) {
+  const cloudMaterial = makeMaterial(`${name}-mat`, "#f5fbff");
+  cloudMaterial.alpha = 0.82;
+  [-1.4, 0, 1.3].forEach((offset, part) => {
+    const puff = BABYLON.MeshBuilder.CreateSphere(`${name}-${part}`, { diameter: 5.2 * scale, segments: 12 }, scene);
+    puff.scaling.y = 0.35;
+    puff.position.set(x + offset * scale, y + Math.sin(part) * 0.25, z);
+    puff.material = cloudMaterial;
+  });
+}
+
+function addTree(name, x, z, scale = 1) {
+  const trunk = BABYLON.MeshBuilder.CreateCylinder(`${name}-trunk`, { diameter: 0.7 * scale, height: 3.2 * scale }, scene);
+  trunk.position.set(x, 1.6 * scale, z);
+  trunk.material = makeMaterial(`${name}-trunk-mat`, "#6b3f24");
+  const crown = BABYLON.MeshBuilder.CreateSphere(`${name}-crown`, { diameter: 4.2 * scale, segments: 12 }, scene);
+  crown.position.set(x, 4.1 * scale, z);
+  crown.scaling.y = 1.15;
+  crown.material = makeMaterial(`${name}-leaf-mat`, "#146c47");
+}
+
+function addScenery() {
+  const sky = BABYLON.MeshBuilder.CreateBox("sky-gradient", { width: 320, height: 90, depth: 2 }, scene);
+  sky.position.set(35, 35, 72);
+  sky.material = makeMaterial("sky-gradient-mat", "#78c7ff");
+  sky.material.emissiveColor = color3("#78c7ff");
+
+  addCloud("cloud-a", -34, 31, 64, 0.9);
+  addCloud("cloud-b", 8, 38, 66, 1.2);
+  addCloud("cloud-c", 46, 28, 63, 0.75);
+
+  [-52, -34, -16, 18, 38, 55].forEach((x, index) => {
+    addTree(`north-tree-${index}`, x, -48 - (index % 2) * 3, 0.9 + (index % 3) * 0.12);
+    addTree(`south-tree-${index}`, x, 48 + (index % 2) * 3, 0.85 + (index % 2) * 0.12);
+  });
+}
+
+function makeFootballPatches(parent) {
+  const patchMaterial = makeMaterial("ball-patch-material", "#101820", 0.45);
+  [
+    [0, 0.62, 0],
+    [0.52, 0.12, 0.18],
+    [-0.52, 0.12, -0.18],
+    [0.18, -0.2, 0.5],
+    [-0.18, -0.2, -0.5],
+  ].forEach((position, index) => {
+    const patch = BABYLON.MeshBuilder.CreateCylinder(`ball-patch-${index}`, { diameter: 0.34, height: 0.035, tessellation: 5 }, scene);
+    patch.position.set(position[0], position[1], position[2]);
+    patch.rotation.x = Math.PI / 2;
+    patch.parent = parent;
+    patch.material = patchMaterial;
+  });
+}
+
 function createScene() {
   engine = new BABYLON.Engine(gameCanvas, true, { preserveDrawingBuffer: true, stencil: true });
   scene = new BABYLON.Scene(engine);
-  scene.clearColor = new BABYLON.Color4(0.02, 0.07, 0.09, 1);
+  scene.clearColor = new BABYLON.Color4(0.42, 0.72, 0.96, 1);
 
   camera = new BABYLON.FreeCamera("match-camera", new BABYLON.Vector3(-14, 8, 0), scene);
   camera.fov = 0.82;
@@ -205,6 +305,7 @@ function createScene() {
   stands.scaling.z = 0.66;
   stands.position.y = -0.2;
   stands.material = standMaterial;
+  addScenery();
 
   makeGoal("left-goal", -58);
   makeGoal("right-goal", 58);
@@ -215,6 +316,7 @@ function createScene() {
   ballMesh = BABYLON.MeshBuilder.CreateSphere("ball", { diameter: 1.45, segments: 24 }, scene);
   ballMesh.position.copyFrom(state.ball);
   ballMesh.material = makeMaterial("ball-material", "#f3fbff", 0.3);
+  makeFootballPatches(ballMesh);
 
   engine.runRenderLoop(() => {
     updateGame();
@@ -260,7 +362,7 @@ function applyCountryVisuals() {
 }
 
 function resetPositions() {
-  state.ball = new BABYLON.Vector3(-3, 0.72, 0);
+  state.ball = new BABYLON.Vector3(4.3, 0.72, 0);
   state.ballVelocity = new BABYLON.Vector3(0, 0, 0);
   state.ballLift = 0;
   formations.user.forEach((position, index) => {
@@ -309,7 +411,7 @@ function controlledPlayer() {
 }
 
 function userHasBall() {
-  return distanceXZ(controlledPlayer().root.position, state.ball) < 3.2;
+  return distanceXZ(controlledPlayer().root.position, state.ball) < 4.8;
 }
 
 function shoot() {
@@ -334,6 +436,37 @@ function opponentShoot() {
   const aim = new BABYLON.Vector3(-58 - state.ball.x, 0, -state.ball.z * 0.18).normalize();
   state.ballVelocity = aim.scale(1.12);
   state.ballLift = 0.18;
+}
+
+function passBall() {
+  if (!state.running || !userHasBall()) {
+    matchMessage.textContent = "Get close to the ball before passing.";
+    return;
+  }
+  const teammate = state.userPlayers
+    .slice()
+    .filter((player) => player.index !== state.controlledIndex)
+    .sort((a, b) => distanceXZ(a.root.position, state.ball) - distanceXZ(b.root.position, state.ball))[0];
+  if (!teammate) return;
+  const aim = teammate.root.position.subtract(state.ball).normalize();
+  state.ballVelocity = aim.scale(1.05);
+  state.ballLift = 0.08;
+  matchMessage.textContent = "Quick pass into space.";
+}
+
+function tackle() {
+  if (!state.running) return;
+  const nearest = state.opponentPlayers
+    .slice()
+    .sort((a, b) => distanceXZ(a.root.position, controlledPlayer().root.position) - distanceXZ(b.root.position, controlledPlayer().root.position))[0];
+  if (nearest && distanceXZ(nearest.root.position, controlledPlayer().root.position) < 4.6) {
+    state.ball.x = controlledPlayer().root.position.x + 2.2;
+    state.ball.z = controlledPlayer().root.position.z;
+    state.ballVelocity.scaleInPlace(0.2);
+    matchMessage.textContent = "Standing tackle won.";
+  } else {
+    matchMessage.textContent = "Tackle missed.";
+  }
 }
 
 function score(team) {
@@ -518,12 +651,31 @@ window.addEventListener("keyup", (event) => {
 actionButtons.forEach((button) => {
   const action = button.dataset.action;
   if (action === "shoot") button.addEventListener("click", shoot);
+  if (action === "pass") button.addEventListener("click", passBall);
+  if (action === "tackle") button.addEventListener("click", tackle);
   if (action === "sprint") {
     button.addEventListener("pointerdown", () => { state.sprinting = true; });
     button.addEventListener("pointerup", () => { state.sprinting = false; });
     button.addEventListener("pointerleave", () => { state.sprinting = false; });
     button.addEventListener("pointercancel", () => { state.sprinting = false; });
   }
+});
+
+fullscreenButton.addEventListener("click", async () => {
+  const target = document.querySelector("#game-canvas-wrap");
+  if (!document.fullscreenElement) {
+    await target.requestFullscreen?.();
+    fullscreenButton.textContent = "Exit";
+  } else {
+    await document.exitFullscreen?.();
+    fullscreenButton.textContent = "Fullscreen";
+  }
+  engine.resize();
+});
+
+document.addEventListener("fullscreenchange", () => {
+  fullscreenButton.textContent = document.fullscreenElement ? "Exit" : "Fullscreen";
+  engine.resize();
 });
 
 function resetJoystick() {

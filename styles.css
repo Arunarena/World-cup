@@ -1119,6 +1119,22 @@ iframe {
     0 2rem 5rem rgba(0, 0, 0, 0.25);
 }
 
+.fullscreen-button {
+  position: absolute;
+  right: 0.85rem;
+  top: 0.85rem;
+  z-index: 3;
+  min-height: 2.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  border-radius: 8px;
+  background: rgba(5, 16, 21, 0.72);
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 900;
+  padding: 0 0.95rem;
+  backdrop-filter: blur(12px);
+}
+
 #game-canvas {
   display: block;
   width: 100%;
@@ -1200,9 +1216,9 @@ iframe {
 
 .action-pad {
   display: grid;
-  grid-template-columns: repeat(2, minmax(5.5rem, 1fr));
+  grid-template-columns: repeat(2, minmax(5.4rem, 1fr));
   gap: 0.7rem;
-  min-width: min(16rem, 52vw);
+  min-width: min(18rem, 56vw);
 }
 
 .control-button {
@@ -1218,6 +1234,12 @@ iframe {
 .primary-control {
   background: var(--accent);
   color: #061015;
+}
+
+.shoot-control {
+  grid-column: 1 / -1;
+  min-height: 4.25rem;
+  font-size: 1.18rem;
 }
 
 .sprint-control {
@@ -1707,8 +1729,8 @@ iframe {
   }
 
   .action-pad {
-    grid-template-columns: 1fr;
-    min-width: 7.5rem;
+    grid-template-columns: repeat(2, minmax(4.9rem, 1fr));
+    min-width: min(13.5rem, 55vw);
   }
 
   .mini-player {
