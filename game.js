@@ -120,22 +120,22 @@ function makePlayer(name, team, index, position) {
   const root = new BABYLON.TransformNode(name, scene);
   root.position = new BABYLON.Vector3(position[0], 0, position[1]);
 
-  const body = BABYLON.MeshBuilder.CreateCapsule(`${name}-body`, { height: 2.4, radius: 0.42 }, scene);
-  body.position.y = 1.35;
+  const body = BABYLON.MeshBuilder.CreateCapsule(`${name}-body`, { height: 3.4, radius: 0.62 }, scene);
+  body.position.y = 1.8;
   body.parent = root;
   body.material = team === "user" ? userMaterial : opponentMaterial;
 
-  const stripe = BABYLON.MeshBuilder.CreateBox(`${name}-stripe`, { width: 0.5, height: 0.88, depth: 0.07 }, scene);
-  stripe.position.set(0, 1.42, -0.39);
+  const stripe = BABYLON.MeshBuilder.CreateBox(`${name}-stripe`, { width: 0.72, height: 1.1, depth: 0.08 }, scene);
+  stripe.position.set(0, 1.88, -0.58);
   stripe.parent = root;
   stripe.material = team === "user" ? userAccentMaterial : opponentAccentMaterial;
 
-  const head = BABYLON.MeshBuilder.CreateSphere(`${name}-head`, { diameter: 0.62, segments: 16 }, scene);
-  head.position.y = 2.7;
+  const head = BABYLON.MeshBuilder.CreateSphere(`${name}-head`, { diameter: 0.86, segments: 16 }, scene);
+  head.position.y = 3.65;
   head.parent = root;
   head.material = makeMaterial(`${name}-skin`, "#d69a6d");
 
-  const marker = BABYLON.MeshBuilder.CreateTorus(`${name}-marker`, { diameter: 1.25, thickness: 0.055 }, scene);
+  const marker = BABYLON.MeshBuilder.CreateTorus(`${name}-marker`, { diameter: 2.05, thickness: 0.08 }, scene);
   marker.rotation.x = Math.PI / 2;
   marker.position.y = 0.08;
   marker.parent = root;
@@ -178,12 +178,9 @@ function createScene() {
   scene = new BABYLON.Scene(engine);
   scene.clearColor = new BABYLON.Color4(0.02, 0.07, 0.09, 1);
 
-  camera = new BABYLON.ArcRotateCamera("match-camera", Math.PI / 2, 1.02, 88, new BABYLON.Vector3(0, 0, 0), scene);
-  camera.attachControl(gameCanvas, true);
-  camera.lowerRadiusLimit = 54;
-  camera.upperRadiusLimit = 110;
-  camera.lowerBetaLimit = 0.72;
-  camera.upperBetaLimit = 1.25;
+  camera = new BABYLON.FreeCamera("match-camera", new BABYLON.Vector3(-14, 8, 0), scene);
+  camera.fov = 0.82;
+  camera.minZ = 0.1;
 
   new BABYLON.HemisphericLight("sky-light", new BABYLON.Vector3(0, 1, 0), scene).intensity = 0.62;
   const sun = new BABYLON.DirectionalLight("stadium-key", new BABYLON.Vector3(-0.4, -0.8, 0.25), scene);
@@ -215,7 +212,7 @@ function createScene() {
   state.userPlayers = formations.user.map((position, index) => makePlayer(`user-${index}`, "user", index, position));
   state.opponentPlayers = formations.opponent.map((position, index) => makePlayer(`opponent-${index}`, "opponent", index, position));
 
-  ballMesh = BABYLON.MeshBuilder.CreateSphere("ball", { diameter: 1.05, segments: 24 }, scene);
+  ballMesh = BABYLON.MeshBuilder.CreateSphere("ball", { diameter: 1.45, segments: 24 }, scene);
   ballMesh.position.copyFrom(state.ball);
   ballMesh.material = makeMaterial("ball-material", "#f3fbff", 0.3);
 
@@ -270,12 +267,14 @@ function resetPositions() {
     const player = state.userPlayers[index];
     if (!player) return;
     player.root.position.set(position[0], 0, position[1]);
+    player.root.rotation.y = Math.PI / 2;
     player.velocity.set(0, 0, 0);
   });
   formations.opponent.forEach((position, index) => {
     const player = state.opponentPlayers[index];
     if (!player) return;
     player.root.position.set(position[0], 0, position[1]);
+    player.root.rotation.y = -Math.PI / 2;
     player.velocity.set(0, 0, 0);
   });
   if (ballMesh) ballMesh.position.copyFrom(state.ball);
@@ -367,7 +366,7 @@ function inputVector() {
 
 function turnPlayer(player, movement) {
   if (movement.length() < 0.035) return;
-  const targetAngle = Math.atan2(movement.x, movement.z);
+  const targetAngle = Math.atan2(movement.x, movement.y);
   const current = player.root.rotation.y;
   const delta = Math.atan2(Math.sin(targetAngle - current), Math.cos(targetAngle - current));
   player.root.rotation.y = current + delta * 0.18;
@@ -381,7 +380,7 @@ function moveControlledPlayer() {
   const input = inputVector();
   const boost = (state.keys.has("shift") || state.sprinting) && state.stamina > 0 ? 1.42 : 1;
   const topSpeed = 0.48 * boost;
-  const targetVelocity = new BABYLON.Vector3(input.x * topSpeed, 0, input.y * topSpeed);
+  const targetVelocity = new BABYLON.Vector3(-input.y * topSpeed, 0, input.x * topSpeed);
   const acceleration = input.length() > 0.02 ? 0.17 : 0.09;
 
   controlled.velocity.x += (targetVelocity.x - controlled.velocity.x) * acceleration;
@@ -461,9 +460,26 @@ function updateGame() {
   moveControlledPlayer();
   moveSquads(time);
   moveBall();
-  const followTarget = controlledPlayer().root.position.add(new BABYLON.Vector3(8, 0, 0));
-  camera.target = BABYLON.Vector3.Lerp(camera.target, followTarget, 0.035);
+  updateFollowCamera();
   updateHud();
+}
+
+function updateFollowCamera() {
+  const controlled = controlledPlayer();
+  const player = controlled.root;
+  const speed = controlled.velocity.length();
+  const forward = speed > 0.04
+    ? controlled.velocity.clone().normalize()
+    : new BABYLON.Vector3(1, 0, 0);
+  const desiredPosition = player.position
+    .subtract(forward.scale(13.5))
+    .add(new BABYLON.Vector3(0, 7.2, 0));
+  const lookAt = player.position
+    .add(forward.scale(8.5))
+    .add(new BABYLON.Vector3(0, 2.2, 0));
+
+  camera.position = BABYLON.Vector3.Lerp(camera.position, desiredPosition, 0.12);
+  camera.setTarget(lookAt);
 }
 
 function finishMatch() {
@@ -516,6 +532,7 @@ function resetJoystick() {
 }
 
 function updateJoystick(event) {
+  event.preventDefault();
   const rect = joystick.getBoundingClientRect();
   const centerX = rect.left + rect.width / 2;
   const centerY = rect.top + rect.height / 2;

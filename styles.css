@@ -957,12 +957,12 @@ iframe {
   grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.55fr);
   gap: clamp(1rem, 3vw, 2rem);
   align-items: end;
-  padding: clamp(1.2rem, 4vw, 3rem);
+  padding: clamp(0.9rem, 3vw, 2rem);
 }
 
 .game-hero-copy h1 {
   max-width: 12ch;
-  font-size: clamp(3.2rem, 8vw, 7.2rem);
+  font-size: clamp(2.7rem, 6vw, 5.6rem);
 }
 
 .country-selector,
@@ -1106,7 +1106,7 @@ iframe {
 
 .game-canvas-wrap {
   position: relative;
-  min-height: clamp(28rem, 56vw, 43rem);
+  min-height: clamp(31rem, 68svh, 46rem);
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 8px;
   outline: none;
@@ -1122,7 +1122,7 @@ iframe {
 #game-canvas {
   display: block;
   width: 100%;
-  height: clamp(28rem, 56vw, 43rem);
+  height: clamp(31rem, 68svh, 46rem);
   touch-action: none;
 }
 
@@ -1609,9 +1609,21 @@ iframe {
   .pulse-grid,
   .scoreboard-grid,
   .mood-board,
-  .country-grid,
   .mini-pitch {
     grid-template-columns: 1fr;
+  }
+
+  .country-grid {
+    display: flex;
+    gap: 0.75rem;
+    overflow-x: auto;
+    padding-bottom: 0.45rem;
+    scroll-snap-type: x mandatory;
+  }
+
+  .country-card {
+    min-width: 11rem;
+    scroll-snap-align: start;
   }
 
   .fixture {
@@ -1689,6 +1701,9 @@ iframe {
 
   .mobile-controls {
     align-items: end;
+    position: sticky;
+    bottom: 0.65rem;
+    z-index: 5;
   }
 
   .action-pad {
