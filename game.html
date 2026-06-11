@@ -91,11 +91,14 @@
               <span id="stamina-fill"></span>
             </div>
             <div class="mobile-controls" aria-label="Game controls">
-              <button class="control-button" data-control="up" type="button">Up</button>
-              <button class="control-button" data-control="left" type="button">Left</button>
-              <button class="control-button primary-control" data-control="shoot" type="button">Shoot</button>
-              <button class="control-button" data-control="right" type="button">Right</button>
-              <button class="control-button" data-control="down" type="button">Down</button>
+              <div class="joystick" id="movement-joystick" aria-label="Move player">
+                <span class="joystick-ring"></span>
+                <span class="joystick-thumb" id="joystick-thumb"></span>
+              </div>
+              <div class="action-pad" aria-label="Match actions">
+                <button class="control-button sprint-control" data-action="sprint" type="button">Sprint</button>
+                <button class="control-button primary-control" data-action="shoot" type="button">Shoot</button>
+              </div>
             </div>
           </div>
         </section>

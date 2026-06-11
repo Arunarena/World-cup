@@ -1153,9 +1153,56 @@ iframe {
 }
 
 .mobile-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1rem;
+  touch-action: none;
+}
+
+.joystick {
+  position: relative;
+  width: clamp(7.5rem, 28vw, 10rem);
+  aspect-ratio: 1;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(243, 251, 255, 0.14), transparent 32%),
+    linear-gradient(135deg, rgba(57, 226, 186, 0.18), rgba(120, 168, 255, 0.14));
+  box-shadow:
+    inset 0 0 0 0.7rem rgba(255, 255, 255, 0.04),
+    0 1rem 2rem rgba(0, 0, 0, 0.22);
+}
+
+.joystick-ring,
+.joystick-thumb {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.joystick-ring {
+  width: 58%;
+  aspect-ratio: 1;
+  border: 1px dashed rgba(255, 255, 255, 0.32);
+}
+
+.joystick-thumb {
+  width: 38%;
+  aspect-ratio: 1;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  box-shadow: 0 0.7rem 1.5rem rgba(0, 0, 0, 0.32);
+}
+
+.action-pad {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 0.5rem;
+  grid-template-columns: repeat(2, minmax(5.5rem, 1fr));
+  gap: 0.7rem;
+  min-width: min(16rem, 52vw);
 }
 
 .control-button {
@@ -1171,6 +1218,10 @@ iframe {
 .primary-control {
   background: var(--accent);
   color: #061015;
+}
+
+.sprint-control {
+  background: rgba(120, 168, 255, 0.16);
 }
 
 .penalty-stage,
@@ -1632,9 +1683,17 @@ iframe {
 
   .shot-buttons,
   .game-score,
-  .match-hud,
-  .mobile-controls {
+  .match-hud {
     grid-template-columns: 1fr;
+  }
+
+  .mobile-controls {
+    align-items: end;
+  }
+
+  .action-pad {
+    grid-template-columns: 1fr;
+    min-width: 7.5rem;
   }
 
   .mini-player {

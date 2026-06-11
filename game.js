@@ -42,7 +42,9 @@ const matchClock = document.querySelector("#match-clock");
 const matchMessage = document.querySelector("#match-message");
 const staminaFill = document.querySelector("#stamina-fill");
 const newMatchButton = document.querySelector("#new-match");
-const controlButtons = document.querySelectorAll("[data-control]");
+const joystick = document.querySelector("#movement-joystick");
+const joystickThumb = document.querySelector("#joystick-thumb");
+const actionButtons = document.querySelectorAll("[data-action]");
 
 const state = {
   user: countries[0],
@@ -53,9 +55,12 @@ const state = {
   stamina: 100,
   running: true,
   keys: new Set(),
+  joystickVector: new BABYLON.Vector2(0, 0),
+  sprinting: false,
   controlledIndex: 9,
   ball: new BABYLON.Vector3(-3, 0.72, 0),
   ballVelocity: new BABYLON.Vector3(0, 0, 0),
+  ballLift: 0,
   userPlayers: [],
   opponentPlayers: [],
 };
@@ -137,7 +142,15 @@ function makePlayer(name, team, index, position) {
   marker.material = makeMaterial(`${name}-marker-mat`, index === state.controlledIndex && team === "user" ? "#f7d65a" : "#ffffff");
   marker.visibility = team === "user" && index === state.controlledIndex ? 1 : 0.18;
 
-  return { root, body, marker, base: new BABYLON.Vector3(position[0], 0, position[1]), team, index };
+  return {
+    root,
+    body,
+    marker,
+    base: new BABYLON.Vector3(position[0], 0, position[1]),
+    velocity: new BABYLON.Vector3(0, 0, 0),
+    team,
+    index,
+  };
 }
 
 function makeGoal(name, x) {
@@ -252,8 +265,20 @@ function applyCountryVisuals() {
 function resetPositions() {
   state.ball = new BABYLON.Vector3(-3, 0.72, 0);
   state.ballVelocity = new BABYLON.Vector3(0, 0, 0);
-  formations.user.forEach((position, index) => state.userPlayers[index]?.root.position.set(position[0], 0, position[1]));
-  formations.opponent.forEach((position, index) => state.opponentPlayers[index]?.root.position.set(position[0], 0, position[1]));
+  state.ballLift = 0;
+  formations.user.forEach((position, index) => {
+    const player = state.userPlayers[index];
+    if (!player) return;
+    player.root.position.set(position[0], 0, position[1]);
+    player.velocity.set(0, 0, 0);
+  });
+  formations.opponent.forEach((position, index) => {
+    const player = state.opponentPlayers[index];
+    if (!player) return;
+    player.root.position.set(position[0], 0, position[1]);
+    player.velocity.set(0, 0, 0);
+  });
+  if (ballMesh) ballMesh.position.copyFrom(state.ball);
 }
 
 function resetMatch() {
@@ -293,16 +318,23 @@ function shoot() {
     matchMessage.textContent = "Bring your striker onto the ball first.";
     return;
   }
-  const aim = new BABYLON.Vector3(58 - state.ball.x, 0, -state.ball.z * 0.18).normalize();
+  const player = controlledPlayer();
+  const forward = player.velocity.length() > 0.04
+    ? player.velocity.clone().normalize()
+    : new BABYLON.Vector3(1, 0, 0);
+  const goalAim = new BABYLON.Vector3(58 - state.ball.x, 0, -state.ball.z * 0.15).normalize();
+  const aim = forward.scale(0.45).add(goalAim.scale(0.85)).normalize();
   const power = state.stamina > 28 ? 1 : 0.72;
-  state.ballVelocity = aim.scale(1.42 * power);
-  state.stamina = clamp(state.stamina - 20, 0, 100);
-  matchMessage.textContent = "Shot through traffic.";
+  state.ballVelocity = aim.scale(1.58 * power);
+  state.ballLift = 0.28 * power;
+  state.stamina = clamp(state.stamina - 22, 0, 100);
+  matchMessage.textContent = "Driven shot toward goal.";
 }
 
 function opponentShoot() {
   const aim = new BABYLON.Vector3(-58 - state.ball.x, 0, -state.ball.z * 0.18).normalize();
   state.ballVelocity = aim.scale(1.12);
+  state.ballLift = 0.18;
 }
 
 function score(team) {
@@ -317,24 +349,58 @@ function score(team) {
   updateHud();
 }
 
+function keyboardVector() {
+  const vector = new BABYLON.Vector2(0, 0);
+  if (state.keys.has("arrowup") || state.keys.has("w")) vector.y -= 1;
+  if (state.keys.has("arrowdown") || state.keys.has("s")) vector.y += 1;
+  if (state.keys.has("arrowleft") || state.keys.has("a")) vector.x -= 1;
+  if (state.keys.has("arrowright") || state.keys.has("d")) vector.x += 1;
+  if (vector.length() > 1) vector.normalize();
+  return vector;
+}
+
+function inputVector() {
+  const keyboard = keyboardVector();
+  if (state.joystickVector.length() > 0.05) return state.joystickVector.clone();
+  return keyboard;
+}
+
+function turnPlayer(player, movement) {
+  if (movement.length() < 0.035) return;
+  const targetAngle = Math.atan2(movement.x, movement.z);
+  const current = player.root.rotation.y;
+  const delta = Math.atan2(Math.sin(targetAngle - current), Math.cos(targetAngle - current));
+  player.root.rotation.y = current + delta * 0.18;
+  player.body.rotation.z = clamp(-movement.x * 0.18, -0.18, 0.18);
+}
+
 function moveControlledPlayer() {
   if (!state.running) return;
-  const player = controlledPlayer().root;
-  const boost = state.keys.has("shift") && state.stamina > 0 ? 1.35 : 1;
-  const speed = 0.46 * boost;
+  const controlled = controlledPlayer();
+  const player = controlled.root;
+  const input = inputVector();
+  const boost = (state.keys.has("shift") || state.sprinting) && state.stamina > 0 ? 1.42 : 1;
+  const topSpeed = 0.48 * boost;
+  const targetVelocity = new BABYLON.Vector3(input.x * topSpeed, 0, input.y * topSpeed);
+  const acceleration = input.length() > 0.02 ? 0.17 : 0.09;
 
-  if (state.keys.has("arrowup") || state.keys.has("w")) player.position.z -= speed;
-  if (state.keys.has("arrowdown") || state.keys.has("s")) player.position.z += speed;
-  if (state.keys.has("arrowleft") || state.keys.has("a")) player.position.x -= speed;
-  if (state.keys.has("arrowright") || state.keys.has("d")) player.position.x += speed;
-
+  controlled.velocity.x += (targetVelocity.x - controlled.velocity.x) * acceleration;
+  controlled.velocity.z += (targetVelocity.z - controlled.velocity.z) * acceleration;
+  player.position.addInPlace(controlled.velocity);
   player.position.x = clamp(player.position.x, -55, 55);
   player.position.z = clamp(player.position.z, -33, 33);
-  state.stamina = clamp(state.stamina + (boost > 1 ? -0.34 : 0.13), 0, 100);
+
+  turnPlayer(controlled, new BABYLON.Vector2(controlled.velocity.x, controlled.velocity.z));
+  state.stamina = clamp(state.stamina + (boost > 1 && input.length() > 0.05 ? -0.42 : 0.16), 0, 100);
 
   if (userHasBall()) {
-    state.ball.x += (player.position.x + 2.2 - state.ball.x) * 0.28;
-    state.ball.z += (player.position.z - state.ball.z) * 0.28;
+    const carryDistance = 1.75 + controlled.velocity.length() * 2.1;
+    const carry = controlled.velocity.length() > 0.04
+      ? controlled.velocity.clone().normalize().scale(carryDistance)
+      : new BABYLON.Vector3(2.1, 0, 0);
+    state.ball.x += (player.position.x + carry.x - state.ball.x) * 0.3;
+    state.ball.z += (player.position.z + carry.z - state.ball.z) * 0.3;
+    state.ballVelocity.scaleInPlace(0.68);
   }
 }
 
@@ -344,8 +410,12 @@ function moveSquads(time) {
     const press = state.ball.x > -20 ? 7 : 0;
     const targetX = player.base.x + press + Math.sin(time / 900 + index) * 0.65;
     const targetZ = player.base.z + Math.cos(time / 1100 + index) * 0.65;
-    player.root.position.x += clamp(targetX - player.root.position.x, -0.12, 0.12);
-    player.root.position.z += clamp(targetZ - player.root.position.z, -0.12, 0.12);
+    const stepX = clamp(targetX - player.root.position.x, -0.12, 0.12);
+    const stepZ = clamp(targetZ - player.root.position.z, -0.12, 0.12);
+    player.velocity.set(stepX, 0, stepZ);
+    player.root.position.x += stepX;
+    player.root.position.z += stepZ;
+    turnPlayer(player, new BABYLON.Vector2(stepX, stepZ));
   });
 
   state.opponentPlayers.forEach((player, index) => {
@@ -353,8 +423,12 @@ function moveSquads(time) {
     const pressure = distanceXZ(player.root.position, state.ball) < 16 ? state.ball : player.base;
     const targetX = pressure.x + (index % 3 - 1) * 1.8;
     const targetZ = pressure.z + (Math.floor(index / 3) - 1) * 1.2;
-    player.root.position.x += clamp(targetX - player.root.position.x, -0.18, 0.18);
-    player.root.position.z += clamp(targetZ - player.root.position.z, -0.18, 0.18);
+    const stepX = clamp(targetX - player.root.position.x, -0.18, 0.18);
+    const stepZ = clamp(targetZ - player.root.position.z, -0.18, 0.18);
+    player.velocity.set(stepX, 0, stepZ);
+    player.root.position.x += stepX;
+    player.root.position.z += stepZ;
+    turnPlayer(player, new BABYLON.Vector2(stepX, stepZ));
 
     if (distanceXZ(player.root.position, state.ball) < 2.5 && !userHasBall()) {
       state.ball.x += (player.root.position.x - 2.2 - state.ball.x) * 0.25;
@@ -367,6 +441,8 @@ function moveSquads(time) {
 function moveBall() {
   state.ball.addInPlace(state.ballVelocity);
   state.ballVelocity.scaleInPlace(0.982);
+  state.ballLift *= 0.955;
+  state.ball.y = 0.72 + Math.max(0, Math.sin(state.ballLift * Math.PI * 3.5) * state.ballLift * 4.2);
   state.ball.x = clamp(state.ball.x, -59, 59);
   state.ball.z = clamp(state.ball.z, -35.5, 35.5);
 
@@ -385,7 +461,8 @@ function updateGame() {
   moveControlledPlayer();
   moveSquads(time);
   moveBall();
-  camera.target = BABYLON.Vector3.Lerp(camera.target, controlledPlayer().root.position, 0.025);
+  const followTarget = controlledPlayer().root.position.add(new BABYLON.Vector3(8, 0, 0));
+  camera.target = BABYLON.Vector3.Lerp(camera.target, followTarget, 0.035);
   updateHud();
 }
 
@@ -422,17 +499,49 @@ window.addEventListener("keyup", (event) => {
   state.keys.delete(event.key.toLowerCase());
 });
 
-controlButtons.forEach((button) => {
-  const control = button.dataset.control;
-  if (control === "shoot") {
-    button.addEventListener("click", shoot);
-    return;
+actionButtons.forEach((button) => {
+  const action = button.dataset.action;
+  if (action === "shoot") button.addEventListener("click", shoot);
+  if (action === "sprint") {
+    button.addEventListener("pointerdown", () => { state.sprinting = true; });
+    button.addEventListener("pointerup", () => { state.sprinting = false; });
+    button.addEventListener("pointerleave", () => { state.sprinting = false; });
+    button.addEventListener("pointercancel", () => { state.sprinting = false; });
   }
-
-  button.addEventListener("pointerdown", () => state.keys.add(`arrow${control}`));
-  button.addEventListener("pointerup", () => state.keys.delete(`arrow${control}`));
-  button.addEventListener("pointerleave", () => state.keys.delete(`arrow${control}`));
 });
+
+function resetJoystick() {
+  state.joystickVector.set(0, 0);
+  joystickThumb.style.transform = "translate(-50%, -50%)";
+}
+
+function updateJoystick(event) {
+  const rect = joystick.getBoundingClientRect();
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+  const radius = rect.width * 0.34;
+  const dx = event.clientX - centerX;
+  const dy = event.clientY - centerY;
+  const distance = Math.min(radius, Math.hypot(dx, dy));
+  const angle = Math.atan2(dy, dx);
+  const thumbX = Math.cos(angle) * distance;
+  const thumbY = Math.sin(angle) * distance;
+  state.joystickVector.set(thumbX / radius, thumbY / radius);
+  joystickThumb.style.transform = `translate(calc(-50% + ${thumbX}px), calc(-50% + ${thumbY}px))`;
+}
+
+joystick.addEventListener("pointerdown", (event) => {
+  joystick.setPointerCapture(event.pointerId);
+  updateJoystick(event);
+});
+joystick.addEventListener("pointermove", (event) => {
+  if (joystick.hasPointerCapture(event.pointerId)) updateJoystick(event);
+});
+joystick.addEventListener("pointerup", (event) => {
+  joystick.releasePointerCapture(event.pointerId);
+  resetJoystick();
+});
+joystick.addEventListener("pointercancel", resetJoystick);
 
 window.setInterval(() => {
   if (!state.running) return;
