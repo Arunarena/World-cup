@@ -1,10 +1,12 @@
-const CACHE_NAME = "kickverse-v2";
+const CACHE_NAME = "kickverse-v3";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./streams.html",
+  "./game.html",
   "./styles.css",
   "./app.js",
+  "./game.js",
   "./manifest.webmanifest",
   "./icons/icon-192.svg",
   "./icons/icon-512.svg",

@@ -35,6 +35,12 @@
       "short_name": "Scores",
       "url": "./index.html#scoreboard",
       "icons": [{ "src": "icons/icon-192.svg", "sizes": "192x192", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "Country Clash",
+      "short_name": "Game",
+      "url": "./game.html",
+      "icons": [{ "src": "icons/icon-192.svg", "sizes": "192x192", "type": "image/svg+xml" }]
     }
   ]
 }

@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Country Clash | KickVerse</title>
+    <meta name="theme-color" content="#061015" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="icons/icon-192.svg" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body data-section-theme="game">
+    <canvas id="pitch-canvas" aria-hidden="true"></canvas>
+
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="index.html" aria-label="KickVerse home">
+          <span class="brand-mark">KV</span>
+          <span>
+            <strong>KickVerse</strong>
+            <small>Country Clash arcade match</small>
+          </span>
+        </a>
+
+        <nav class="nav-links" aria-label="Primary navigation">
+          <a href="index.html#watch">Home</a>
+          <a href="index.html#scoreboard">Scores</a>
+          <a href="streams.html">KickVerse Stream</a>
+          <a href="index.html#fixtures">Fixtures</a>
+          <a href="game.html">Game</a>
+        </nav>
+      </header>
+
+      <main>
+        <section class="game-hero" id="country-clash">
+          <div class="game-hero-copy">
+            <p class="eyebrow">KickVerse Game</p>
+            <h1>Country Clash</h1>
+            <p class="intro">
+              Pick a World Cup country, control the attack, and score before the clock runs out.
+            </p>
+          </div>
+
+          <aside class="country-selector" aria-label="Country selection">
+            <div>
+              <span class="label">Your country</span>
+              <strong id="user-country-name">Canada</strong>
+            </div>
+            <div>
+              <span class="label">Opponent</span>
+              <strong id="opponent-country-name">Brazil</strong>
+            </div>
+            <button class="button install-button" id="new-match" type="button">New Match</button>
+          </aside>
+        </section>
+
+        <section class="content-band clash-band">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">World Cup Countries</p>
+              <h2>Choose your side</h2>
+            </div>
+            <span class="section-note">Tap a country to start as that team</span>
+          </div>
+          <div class="country-grid" id="country-grid" aria-label="World Cup country choices"></div>
+        </section>
+
+        <section class="content-band match-band">
+          <div class="match-hud" aria-label="Match scoreboard">
+            <div class="hud-team">
+              <span id="hud-user-flag">CAN</span>
+              <strong id="hud-user-score">0</strong>
+            </div>
+            <div class="hud-clock">
+              <span id="match-clock">60</span>
+              <small>seconds</small>
+            </div>
+            <div class="hud-team away">
+              <strong id="hud-opponent-score">0</strong>
+              <span id="hud-opponent-flag">BRA</span>
+            </div>
+          </div>
+
+          <div class="arcade-pitch" id="arcade-pitch" tabindex="0" aria-label="Playable football match">
+            <div class="arcade-goal user-goal" aria-hidden="true"></div>
+            <div class="arcade-goal opponent-goal" aria-hidden="true"></div>
+            <div class="arcade-midline" aria-hidden="true"></div>
+            <div class="arcade-player opponent-player" id="opponent-player">
+              <span id="opponent-kit">BRA</span>
+            </div>
+            <div class="arcade-player user-player" id="user-player">
+              <span id="user-kit">CAN</span>
+            </div>
+            <div class="arcade-ball" id="arcade-ball"></div>
+          </div>
+
+          <div class="match-console">
+            <p id="match-message">Move with arrows or the pad. Shoot when you get near the box.</p>
+            <div class="power-meter" aria-label="Stamina">
+              <span id="stamina-fill"></span>
+            </div>
+            <div class="mobile-controls" aria-label="Game controls">
+              <button class="control-button" data-control="up" type="button">Up</button>
+              <button class="control-button" data-control="left" type="button">Left</button>
+              <button class="control-button primary-control" data-control="shoot" type="button">Shoot</button>
+              <button class="control-button" data-control="right" type="button">Right</button>
+              <button class="control-button" data-control="down" type="button">Down</button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+    <script src="game.js"></script>
+  </body>
+</html>
